@@ -165,13 +165,13 @@
     .section-label { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px; }
 
     /* ── HUD ── */
-    .mission-track { display:flex; justify-content:center; gap:8px; margin:4px 0 12px; }
+    .mission-track { display:flex; justify-content:center; gap:8px; margin:4px 0 14px; }
     .mission-pip {
-      width:44px; height:44px; border-radius:50%;
+      width:68px; height:68px; border-radius:14px;
       display:flex; align-items:center; justify-content:center;
-      font-family:'Cinzel',serif; font-size:0.82rem; font-weight:700;
+      font-family:'Cinzel',serif; font-size:1.4rem; font-weight:700;
       border:2px solid; transition:all 0.4s;
-      flex-direction:column; gap:1px;
+      flex-direction:column; gap:4px;
     }
     .pip-pending { background:var(--surface3); border-color:rgba(255,255,255,0.08); color:var(--text-muted); }
     .pip-current { background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); animation:pipPulse 2s infinite; }
@@ -181,7 +181,7 @@
       0%,100% { box-shadow:0 0 6px rgba(201,168,76,0.2); }
       50%      { box-shadow:0 0 20px rgba(201,168,76,0.45); }
     }
-    .pip-label { font-size:0.5rem; letter-spacing:0.04em; opacity:0.75; }
+    .pip-label { font-size:0.65rem; letter-spacing:0.04em; opacity:0.85; }
     .score-row { display:flex; justify-content:center; gap:10px; margin-bottom:12px; }
     .score-badge { padding:5px 14px; border-radius:20px; font-family:'Cinzel',serif; font-size:0.76rem; letter-spacing:0.06em; }
     .score-good   { background:rgba(30,122,66,0.18);  border:1px solid var(--good);  color:var(--good-light); }
@@ -693,16 +693,18 @@ function updateHUD(){
   for(let i=1;i<=5;i++){
     const pip=document.createElement('div');
     pip.className='mission-pip';
+    const needTwo=players.length>=7&&i===4;
+    const failReq=needTwo?'✗2':'✗1';
     if(i<mission){
       const r=missionHistory[i-1];
       pip.classList.add(r==='good'?'pip-good':'pip-evil');
-      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${r==='good'?'✓':'✗'}</div>`;
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${r==='good'?'✓':failReq}</div>`;
     } else if(i===mission){
       pip.classList.add('pip-current');
-      pip.innerHTML=`${ms[i-1]}<div class="pip-label">M${i}</div>`;
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${failReq}</div>`;
     } else {
       pip.classList.add('pip-pending');
-      pip.innerHTML=`${ms[i-1]}<div class="pip-label">M${i}</div>`;
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${failReq}</div>`;
     }
     tr.appendChild(pip);
   }
