@@ -595,7 +595,7 @@ function startGame(){
   const inputs=document.querySelectorAll('#nameGrid input');
   players=Array.from(inputs).map((inp,i)=>inp.value.trim()||`ผู้เล่น ${i+1}`);
   roles=shuffle(generateRoles(playerCount));
-  leader=0; mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
+  leader=Math.floor(Math.random()*playerCount); mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
   hide('phase-setup'); show('phase-roles'); renderRoleButtons();
 }
 
