@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avalon Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c9a84c; --gold-light: #f0d080; --gold-dim: #7a6020;
+      --deep: #08080f; --surface: #0f0f1e; --surface2: #171728;
+      --surface3: #1e1e34; --surface4: #252540;
+      --good: #1e7a42; --good-light: #2eaa5c; --good-glow: rgba(46,170,92,0.3);
+      --evil: #8b1a1a; --evil-light: #c42828; --evil-glow: rgba(196,40,40,0.3);
+      --text: #e8e0d0; --text-muted: #7878a0; --border: rgba(201,168,76,0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Crimson Text', Georgia, serif;
+      background: var(--deep);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 16px 40px;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 8%,  rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 22%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(2px 2px at 33% 70%, rgba(201,168,76,0.25) 0%, transparent 100%),
+        radial-gradient(2px 2px at 78% 35%, rgba(201,168,76,0.18) 0%, transparent 100%);
+      pointer-events: none; z-index: 0;
+    }
+    body > * { position: relative; z-index: 1; }
+
+    /* ── Header ── */
+    .site-header { text-align: center; padding: 28px 0 8px; width: 100%; }
+    .site-header h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      color: var(--gold);
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 40px rgba(201,168,76,0.5), 0 2px 0 rgba(0,0,0,0.8);
+    }
+    .site-header .tagline {
+      font-family: 'Cinzel', serif; font-size: 0.78rem;
+      color: var(--text-muted); letter-spacing: 0.3em; margin-top: 6px;
+    }
+    .crown-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 12px auto 20px; width: 260px;
+      color: var(--gold-dim); font-size: 1.2rem;
+    }
+    .crown-divider::before, .crown-divider::after {
+      content: ''; flex: 1; height: 1px;
+    }
+    .crown-divider::before { background: linear-gradient(to right, transparent, var(--gold-dim)); }
+    .crown-divider::after  { background: linear-gradient(to left, transparent, var(--gold-dim)); }
+
+    /* ── Card ── */
+    .card {
+      background: linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 26px 22px; width: 100%; max-width: 460px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(201,168,76,0.1);
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .card-title {
+      font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold);
+      text-align: center; margin-bottom: 20px; letter-spacing: 0.1em;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .card-title::before, .card-title::after { content:''; flex:1; height:1px; background:var(--border); }
+    .hidden { display: none !important; }
+
+    /* ── Inputs ── */
+    label {
+      display: block; font-family:'Cinzel',serif; font-size:0.72rem;
+      color:var(--text-muted); margin-bottom:5px; letter-spacing:0.1em; text-transform:uppercase;
+    }
+    input[type=text] {
+      width:100%; padding:10px 13px; background:var(--surface3);
+      border:1px solid var(--border); border-radius:10px;
+      color:var(--text); font-family:'Crimson Text',serif; font-size:1rem;
+      outline:none; transition:border-color 0.2s, box-shadow 0.2s;
+    }
+    input[type=text]:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.1); }
+
+    /* ── Buttons ── */
+    button { border:none; border-radius:12px; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.05em; transition:all 0.18s; }
+    .btn-gold {
+      background: linear-gradient(135deg,#9a7020,#c9a84c,#e8c860);
+      color:#1a0e00; font-weight:700; font-size:0.9rem; padding:13px 20px;
+      box-shadow:0 4px 20px rgba(180,140,40,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-gold:hover { transform:translateY(-2px); box-shadow:0 7px 26px rgba(180,140,40,0.6); }
+    .btn-primary {
+      background:linear-gradient(135deg,#2a3fb0,#3a55d0); color:white;
+      font-size:0.88rem; padding:12px 18px; border:1px solid rgba(255,255,255,0.1);
+      box-shadow:0 4px 18px rgba(40,70,200,0.35);
+    }
+    .btn-primary:hover { transform:translateY(-2px); }
+    .btn-good {
+      background:linear-gradient(135deg,#155c30,#22904c); color:white;
+      font-size:0.9rem; padding:13px 20px;
+      box-shadow:0 4px 18px rgba(30,122,66,0.45); border:1px solid rgba(46,170,92,0.25);
+    }
+    .btn-good:hover { transform:translateY(-2px); box-shadow:0 7px 24px rgba(30,122,66,0.6); }
+    .btn-evil {
+      background:linear-gradient(135deg,#6e1010,#b02020); color:white;
+      font-size:0.9rem; padding:13px 20px;
+      box-shadow:0 4px 18px rgba(140,20,20,0.45); border:1px solid rgba(196,40,40,0.25);
+    }
+    .btn-evil:hover { transform:translateY(-2px); box-shadow:0 7px 24px rgba(140,20,20,0.6); }
+    .btn-player {
+      background:var(--surface3); color:var(--text); border:1px solid var(--border);
+      width:100%; text-align:left; padding:12px 16px; font-family:'Crimson Text',serif;
+      font-size:1.05rem; border-radius:12px; margin-bottom:7px;
+      position:relative; transition:all 0.15s;
+      display:flex; align-items:center; gap:10px;
+    }
+    .btn-player:hover { background:var(--surface4); border-color:var(--gold); transform:translateX(3px); }
+    .btn-player.selected { background:var(--surface4); border-color:var(--gold); color:var(--gold-light); }
+    .btn-player.selected::after { content:'✓'; position:absolute; right:14px; color:var(--gold); font-family:'Cinzel',serif; }
+    .btn-player-done {
+      background:var(--surface2); color:var(--text-muted); border:1px solid rgba(255,255,255,0.04);
+      width:100%; text-align:left; padding:12px 16px; font-family:'Crimson Text',serif;
+      font-size:1.05rem; border-radius:12px; margin-bottom:7px;
+      opacity:0.45; display:flex; align-items:center; gap:10px;
+    }
+    .done-check { margin-left:auto; font-size:0.78rem; color:var(--good-light); font-family:'Cinzel',serif; }
+    .big-btn { width:100%; margin-bottom:10px; }
+    .btn-row { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:10px; }
+
+    /* ── Setup ── */
+    .count-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+    .count-ctrl { display:flex; align-items:center; gap:12px; }
+    .count-btn {
+      width:38px; height:38px; border-radius:50%;
+      background:var(--surface3); color:var(--gold); border:1px solid var(--border);
+      font-size:1.3rem; display:flex; align-items:center; justify-content:center;
+      padding:0; font-family:sans-serif; transition:all 0.15s;
+    }
+    .count-btn:hover { background:var(--surface4); border-color:var(--gold); }
+    .count-display { font-family:'Cinzel Decorative',serif; font-size:1.6rem; color:var(--gold); width:32px; text-align:center; }
+    .name-grid { display:flex; flex-direction:column; gap:7px; margin-bottom:18px; }
+    .name-row { display:flex; align-items:center; gap:10px; }
+    .name-row .num { font-family:'Cinzel',serif; color:var(--gold-dim); font-size:0.78rem; width:20px; text-align:right; flex-shrink:0; }
+    .name-row input { margin:0; flex:1; }
+    .divider { height:1px; background:var(--border); margin:16px 0; }
+    .section-label { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:12px; }
+
+    /* ── HUD ── */
+    .mission-track { display:flex; justify-content:center; gap:8px; margin:4px 0 12px; }
+    .mission-pip {
+      width:44px; height:44px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cinzel',serif; font-size:0.82rem; font-weight:700;
+      border:2px solid; transition:all 0.4s;
+      flex-direction:column; gap:1px;
+    }
+    .pip-pending { background:var(--surface3); border-color:rgba(255,255,255,0.08); color:var(--text-muted); }
+    .pip-current { background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); animation:pipPulse 2s infinite; }
+    .pip-good    { background:linear-gradient(135deg,#155c30,#22904c); border-color:var(--good-light); color:white; box-shadow:0 0 14px var(--good-glow); }
+    .pip-evil    { background:linear-gradient(135deg,#6e1010,#b02020); border-color:var(--evil-light); color:white; box-shadow:0 0 14px var(--evil-glow); }
+    @keyframes pipPulse {
+      0%,100% { box-shadow:0 0 6px rgba(201,168,76,0.2); }
+      50%      { box-shadow:0 0 20px rgba(201,168,76,0.45); }
+    }
+    .pip-label { font-size:0.5rem; letter-spacing:0.04em; opacity:0.75; }
+    .score-row { display:flex; justify-content:center; gap:10px; margin-bottom:12px; }
+    .score-badge { padding:5px 14px; border-radius:20px; font-family:'Cinzel',serif; font-size:0.76rem; letter-spacing:0.06em; }
+    .score-good   { background:rgba(30,122,66,0.18);  border:1px solid var(--good);  color:var(--good-light); }
+    .score-evil   { background:rgba(140,20,20,0.18);  border:1px solid var(--evil);  color:var(--evil-light); }
+    .score-reject { background:rgba(80,80,80,0.18);   border:1px solid #444;         color:var(--text-muted); }
+    .leader-bar {
+      background:rgba(201,168,76,0.06); border:1px solid var(--border);
+      border-radius:12px; padding:9px 14px; text-align:center; margin-bottom:14px; font-size:0.95rem;
+    }
+    .leader-bar strong { color:var(--gold); font-family:'Cinzel',serif; font-size:0.88rem; }
+
+    /* ── Misc ── */
+    .result-box {
+      background:var(--surface3); border-radius:14px; padding:16px;
+      text-align:center; margin-bottom:14px; border:1px solid var(--border);
+    }
+    .result-big { font-family:'Cinzel',serif; font-size:1.35rem; margin-bottom:6px; }
+    .result-sub { font-size:0.9rem; color:var(--text-muted); }
+    .info-text  { font-size:0.9rem; color:var(--text-muted); font-style:italic; line-height:1.65; }
+    .info-players { color:var(--gold-light); font-style:normal; font-weight:600; }
+    #mainArea h3 { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--gold-light); margin-bottom:14px; text-align:center; letter-spacing:0.06em; }
+    .assassin-header { text-align:center; margin-bottom:16px; }
+    .assassin-icon { font-size:2.8rem; display:block; margin-bottom:6px; }
+    .role-reveal-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 14px; background:var(--surface3);
+      border-radius:10px; margin-bottom:7px; border:1px solid var(--border);
+    }
+    .role-reveal-row .player-name { font-size:1rem; }
+    .role-reveal-row .role-badge  { font-size:0.85rem; font-family:'Cinzel',serif; letter-spacing:0.04em; }
+
+    /* ── Toast ── */
+    .toast {
+      position:fixed; top:18px; left:50%;
+      transform:translateX(-50%) translateY(-80px);
+      background:var(--surface4); border:1px solid var(--border); border-radius:14px;
+      padding:11px 22px; font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold);
+      box-shadow:0 8px 30px rgba(0,0,0,0.6); transition:transform 0.3s ease;
+      z-index:2000; text-align:center; max-width:300px;
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.9);
+      display:flex; align-items:center; justify-content:center;
+      z-index:900; padding:16px; backdrop-filter:blur(6px);
+    }
+    .modal-box {
+      background:linear-gradient(160deg, var(--surface) 0%, var(--surface2) 100%);
+      border-radius:22px; width:100%; max-width:360px; overflow:hidden;
+      box-shadow:0 0 80px rgba(0,0,0,0.95), 0 0 0 1px var(--border);
+      animation:popIn 0.22s cubic-bezier(0.34,1.5,0.64,1);
+    }
+    @keyframes popIn {
+      from { transform:scale(0.8); opacity:0; }
+      to   { transform:scale(1);   opacity:1; }
+    }
+
+    /* Role art */
+    .role-art-banner {
+      width:100%; height:195px;
+      display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    .role-art-banner svg { position:absolute; inset:0; width:100%; height:100%; }
+    .role-art-overlay {
+      position:relative; z-index:2; text-align:center; pointer-events:none;
+      padding: 0 10px;
+    }
+    .role-art-title {
+      font-family:'Cinzel Decorative',serif; font-size:1.55rem;
+      text-shadow:0 2px 14px rgba(0,0,0,0.95), 0 0 30px currentColor;
+      display:block; line-height:1.2;
+    }
+    .role-art-subtitle {
+      font-family:'Cinzel',serif; font-size:0.68rem;
+      letter-spacing:0.18em; opacity:0.85; display:block; margin-top:5px;
+    }
+
+    .modal-body { padding:18px 20px 20px; }
+    .modal-side {
+      font-family:'Cinzel',serif; font-size:0.78rem; letter-spacing:0.12em;
+      text-transform:uppercase; margin-bottom:10px;
+      display:flex; align-items:center; gap:6px;
+    }
+    .modal-side::before, .modal-side::after { content:''; flex:1; height:1px; background:currentColor; opacity:0.25; }
+    .modal-desc { font-size:1rem; color:var(--text-muted); font-style:italic; line-height:1.65; margin-bottom:12px; text-align:center; }
+    .modal-extra {
+      background:var(--surface3); border-radius:12px; padding:12px 16px;
+      margin-bottom:14px; font-size:0.92rem; color:var(--text-muted); font-style:italic;
+      line-height:1.6; text-align:center; border:1px solid var(--border);
+    }
+    .modal-warn { font-size:0.76rem; color:var(--evil-light); text-align:center; margin-bottom:14px; font-family:'Cinzel',serif; letter-spacing:0.04em; opacity:0.8; }
+
+    /* Badge colors */
+    .c-merlin   { color:#7ec8ff; }
+    .c-percival { color:#90e0a0; }
+    .c-servant  { color:var(--good-light); }
+    .c-assassin { color:#ff6868; }
+    .c-mordred  { color:#cc88ff; }
+    .c-morgana  { color:#ffaa70; }
+    .c-oberon   { color:#d4b870; }
+    .c-minion   { color:var(--evil-light); }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div id="roleModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div id="modalArt" class="role-art-banner"></div>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="site-header">
+  <h1>AVALON</h1>
+  <div class="tagline">The Resistance</div>
+  <div class="crown-divider">♛</div>
+</div>
+
+<!-- Phase 1: Setup -->
+<div id="phase-setup" class="card">
+  <div class="card-title">เริ่มเกมใหม่</div>
+  <div class="count-row">
+    <label style="margin:0">จำนวนผู้เล่น</label>
+    <div class="count-ctrl">
+      <button class="count-btn" onclick="changeCount(-1)">−</button>
+      <span class="count-display" id="countDisplay">7</span>
+      <button class="count-btn" onclick="changeCount(1)">+</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">ชื่อผู้เล่น</div>
+  <div class="name-grid" id="nameGrid"></div>
+  <button class="btn-gold big-btn" onclick="startGame()">⚔️ เริ่มการรบ</button>
+</div>
+
+<!-- Phase 2: Role reveal -->
+<div id="phase-roles" class="card hidden">
+  <div class="card-title">เปิดเผยบทบาท</div>
+  <p class="info-text" style="text-align:center;margin-bottom:16px;">
+    กดชื่อของตัวเองเพื่อดูบทบาท<br>
+    <span style="color:var(--evil-light);font-style:normal;font-family:'Cinzel',serif;font-size:0.82rem;">⚠ ดูได้ครั้งเดียว</span>
+  </p>
+  <div id="roleButtons"></div>
+  <div class="divider"></div>
+  <button class="btn-gold big-btn" onclick="startMainGame()">▶ ทุกคนดูแล้ว — เริ่มภารกิจ</button>
+</div>
+
+<!-- Phase 3: Game -->
+<div id="phase-game" class="card hidden">
+  <div class="mission-track" id="missionTrack"></div>
+  <div class="score-row"     id="scoreRow"></div>
+  <div class="leader-bar"    id="leaderBar"></div>
+  <div class="divider"></div>
+  <div id="mainArea"></div>
+</div>
+
+<script>
+// ── Role SVG Art ─────────────────────────────────────────────────────────────
+const ROLE_ART = {
+  Merlin: {
+    bg:'linear-gradient(160deg,#080818,#0e0e30,#141050)',
+    glow:'#4466ff', titleColor:'#7ec8ff',
+    title:'Merlin', subtitle:'เมอร์ลิน · พ่อมดผู้รู้แจ้ง', side:'good',
+    svg:`<circle cx="30" cy="20" r="1.2" fill="white" opacity=".7"/>
+<circle cx="80" cy="35" r=".8" fill="white" opacity=".5"/>
+<circle cx="200" cy="15" r="1.5" fill="white" opacity=".8"/>
+<circle cx="320" cy="30" r="1" fill="white" opacity=".6"/>
+<circle cx="400" cy="18" r="1.2" fill="white" opacity=".7"/>
+<circle cx="440" cy="45" r=".8" fill="white" opacity=".5"/>
+<circle cx="150" cy="50" r=".9" fill="white" opacity=".4"/>
+<circle cx="380" cy="50" r="28" fill="#b8d0ff" opacity=".12"/>
+<circle cx="388" cy="44" r="22" fill="#080818" opacity=".9"/>
+<ellipse cx="230" cy="130" rx="18" ry="80" fill="#3366ff" opacity=".1"/>
+<line x1="230" y1="30" x2="230" y2="195" stroke="#7788bb" stroke-width="4" stroke-linecap="round"/>
+<circle cx="230" cy="32" r="16" fill="none" stroke="#5577ee" stroke-width="2" opacity=".8"/>
+<circle cx="230" cy="32" r="10" fill="#1a3388" opacity=".9"/>
+<circle cx="230" cy="32" r="5" fill="#99aaff"/>
+<path d="M185 200 Q205 115 230 97 Q255 115 275 200Z" fill="#121232" stroke="#2a3a66" stroke-width="1"/>
+<path d="M212 97 Q230 22 248 97Z" fill="#0c0c24" stroke="#2a3a66" stroke-width="1"/>
+<ellipse cx="230" cy="98" rx="21" ry="7" fill="#181840"/>
+<circle cx="230" cy="84" r="13" fill="#c8a87a" opacity=".92"/>
+<path d="M219 90 Q230 101 241 90" fill="#e0e0e0" opacity=".65"/>
+<line x1="258" y1="60" x2="263" y2="54" stroke="#99aaff" stroke-width="1.5"/>
+<line x1="261" y1="57" x2="255" y2="57" stroke="#99aaff" stroke-width="1.5"/>
+<line x1="196" y1="68" x2="201" y2="62" stroke="#88aaff" stroke-width="1.5"/>
+<line x1="199" y1="65" x2="193" y2="65" stroke="#88aaff" stroke-width="1.5"/>
+<circle cx="270" cy="145" r="8" fill="#1a2266" opacity=".7"/>
+<circle cx="270" cy="145" r="5" fill="#3355cc" opacity=".6"/>
+<circle cx="270" cy="145" r="2.5" fill="#aabbff"/>`
+  },
+  Percival: {
+    bg:'linear-gradient(160deg,#070e07,#0c1a0c,#122212)',
+    glow:'#44bb66', titleColor:'#90e0a0',
+    title:'Percival', subtitle:'เพอร์ซิวัล · อัศวินผู้ภักดี', side:'good',
+    svg:`<path d="M0 150 Q80 120 160 150 Q240 120 320 150 Q390 128 460 150L460 200L0 200Z" fill="#080e08"/>
+<ellipse cx="230" cy="130" rx="58" ry="58" fill="#229944" opacity=".06"/>
+<path d="M188 75 L230 58 L272 75 L272 135 Q250 160 230 165 Q210 160 188 135Z" fill="#18351a" stroke="#3d8a50" stroke-width="2"/>
+<path d="M198 80 L230 65 L262 80 L262 128 Q243 150 230 154 Q217 150 198 128Z" fill="#12281a" stroke="#2d6640" stroke-width="1"/>
+<line x1="230" y1="72" x2="230" y2="149" stroke="#44cc66" stroke-width="2.5" opacity=".8"/>
+<line x1="203" y1="108" x2="257" y2="108" stroke="#44cc66" stroke-width="2.5" opacity=".8"/>
+<ellipse cx="230" cy="57" rx="21" ry="17" fill="#303040" stroke="#445566" stroke-width="2"/>
+<rect x="219" y="49" width="22" height="18" fill="#303040" rx="2"/>
+<path d="M217 56 Q230 61 243 56" stroke="#7799bb" stroke-width="2" fill="none"/>
+<path d="M230 40 Q240 22 246 37 Q238 29 230 40" fill="#44cc55" opacity=".85"/>
+<line x1="188" y1="80" x2="180" y2="180" stroke="#336" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+<path d="M176 78 L184 74 L192 78L192 100 Q184 110 176 112Z" fill="#18281a" stroke="#3d6644" stroke-width="1.5"/>`
+  },
+  Servant: {
+    bg:'linear-gradient(160deg,#0a140a,#101c10,#182618)',
+    glow:'#44aa44', titleColor:'#80cc80',
+    title:'Loyal Servant', subtitle:'ข้ารับใช้ · ผู้พิทักษ์คาเมล็อต', side:'good',
+    svg:`<rect x="0" y="165" width="460" height="35" fill="#080f08"/>
+<path d="M0 168 Q100 148 200 165 Q320 142 460 168L460 200L0 200Z" fill="#0b140b" opacity=".9"/>
+<rect x="216" y="106" width="28" height="52" rx="4" fill="#253a25" stroke="#3d6040" stroke-width="1"/>
+<path d="M213 106 Q196 138 201 166 L216 160Z" fill="#1c3020" opacity=".8"/>
+<path d="M247 106 Q264 138 259 166 L244 160Z" fill="#1c3020" opacity=".8"/>
+<circle cx="230" cy="93" r="15" fill="#c4a078"/>
+<path d="M216 89 Q230 73 244 89Z" fill="#2d3d28" stroke="#3d5535" stroke-width="1"/>
+<rect x="214" y="89" width="32" height="8" rx="2" fill="#36522a"/>
+<line x1="258" y1="82" x2="264" y2="165" stroke="#aaaacc" stroke-width="3" stroke-linecap="round"/>
+<line x1="250" y1="112" x2="273" y2="112" stroke="#aaaacc" stroke-width="3" stroke-linecap="round"/>
+<rect x="259" y="162" width="9" height="12" rx="2" fill="#8a7040"/>
+<path d="M188 102 L200 97 L212 102 L212 127 Q206 138 200 141 Q194 138 188 127Z" fill="#253a25" stroke="#3d6040" stroke-width="1.5"/>
+<line x1="200" y1="107" x2="200" y2="132" stroke="#55aa55" stroke-width="2" opacity=".6"/>
+<line x1="190" y1="120" x2="210" y2="120" stroke="#55aa55" stroke-width="2" opacity=".6"/>`
+  },
+  Assassin: {
+    bg:'linear-gradient(160deg,#120404,#180606,#220808)',
+    glow:'#cc2222', titleColor:'#ff6868',
+    title:'Assassin', subtitle:'นักฆ่า · เงาแห่งความตาย', side:'evil',
+    svg:`<circle cx="370" cy="55" r="36" fill="#3a0606" opacity=".45"/>
+<circle cx="370" cy="55" r="27" fill="#550808" opacity=".35"/>
+<ellipse cx="230" cy="195" rx="65" ry="7" fill="#0e0303" opacity=".6"/>
+<path d="M175 200 Q195 122 230 97 Q265 122 285 200Z" fill="#180404" stroke="#3d0808" stroke-width="1"/>
+<path d="M206 97 Q230 42 254 97 Q239 90 230 92 Q221 90 206 97Z" fill="#120303" stroke="#2e0606" stroke-width="1"/>
+<ellipse cx="230" cy="89" rx="17" ry="13" fill="#0c0202" opacity=".97"/>
+<circle cx="223" cy="87" r="3.2" fill="#cc2222"/>
+<circle cx="237" cy="87" r="3.2" fill="#cc2222"/>
+<circle cx="223" cy="87" r="1.6" fill="#ff5555"/>
+<circle cx="237" cy="87" r="1.6" fill="#ff5555"/>
+<line x1="255" y1="120" x2="306" y2="70" stroke="#b8b8cc" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M304 68 L313 63 L311 74Z" fill="#ccccee"/>
+<rect x="249" y="117" width="10" height="14" rx="1.5" fill="#8a5520" transform="rotate(-45 254 124)"/>
+<circle cx="305" cy="71" r="3" fill="#cc2222" opacity=".85"/>
+<path d="M260 70 L268 62 L270 72Z" fill="#cc1111" opacity=".5"/>
+<circle cx="370" cy="55" r="4" fill="#cc2222" opacity=".6"/>
+<circle cx="370" cy="55" r="2" fill="#ff4444" opacity=".5"/>`
+  },
+  Mordred: {
+    bg:'linear-gradient(160deg,#0e091a,#14102a,#1c1238)',
+    glow:'#9933ff', titleColor:'#cc88ff',
+    title:'Mordred', subtitle:'มอร์เดรด · ภัยซ่อนในความมืด', side:'evil',
+    svg:`<ellipse cx="100" cy="42" rx="65" ry="22" fill="#180d30" opacity=".55"/>
+<ellipse cx="360" cy="52" rx="72" ry="24" fill="#180d30" opacity=".48"/>
+<ellipse cx="230" cy="120" rx="52" ry="62" fill="#7722cc" opacity=".065"/>
+<path d="M194 200 Q200 132 230 110 Q260 132 266 200Z" fill="#180a28" stroke="#4d1d88" stroke-width="1.5"/>
+<path d="M208 117 Q230 110 252 117 L254 152 Q241 164 230 167 Q219 164 206 152Z" fill="#200e3a" stroke="#5d28a0" stroke-width="1.5"/>
+<circle cx="230" cy="134" r="9.5" fill="#28155a" stroke="#7744cc" stroke-width="1"/>
+<circle cx="225.5" cy="132" r="2.2" fill="#aa66ff"/>
+<circle cx="234.5" cy="132" r="2.2" fill="#aa66ff"/>
+<path d="M225 138 Q230 141 235 138" stroke="#aa66ff" stroke-width="1.5" fill="none"/>
+<path d="M208 110 Q230 90 252 110 L250 117 Q230 113 210 117Z" fill="#180a28" stroke="#4d1d88" stroke-width="1.5"/>
+<path d="M210 102 Q200 70 206 58 Q211 76 216 100" fill="#221044" stroke="#4d1d88" stroke-width="1"/>
+<path d="M250 102 Q260 70 254 58 Q249 76 244 100" fill="#221044" stroke="#4d1d88" stroke-width="1"/>
+<rect x="218" y="108" width="24" height="5" rx="2" fill="#0d0818"/>
+<rect x="220" y="109" width="8" height="3" rx="1" fill="#cc88ff"/>
+<rect x="232" y="109" width="8" height="3" rx="1" fill="#cc88ff"/>
+<line x1="270" y1="102" x2="277" y2="196" stroke="#8855cc" stroke-width="3.5" stroke-linecap="round"/>
+<line x1="260" y1="137" x2="287" y2="137" stroke="#8855cc" stroke-width="3" stroke-linecap="round"/>
+<path d="M260 134 Q264 126 270 131 Q264 128 260 134Z" fill="#aa88ff" opacity=".5"/>`
+  },
+  Morgana: {
+    bg:'linear-gradient(160deg,#130710,#1c0c18,#260e22)',
+    glow:'#ff5522', titleColor:'#ffaa70',
+    title:'Morgana', subtitle:'มอร์กาน่า · นางมารแห่งการหลอกลวง', side:'evil',
+    svg:`<ellipse cx="230" cy="162" rx="52" ry="32" fill="#cc4400" opacity=".09"/>
+<path d="M184 200 Q200 127 230 102 Q260 127 276 200Z" fill="#1e0810" stroke="#5e1e38" stroke-width="1"/>
+<path d="M214 200 Q218 142 230 120 Q242 142 246 200" fill="#180610" stroke="#4a1830" stroke-width="1"/>
+<circle cx="230" cy="87" r="16" fill="#c8a080"/>
+<path d="M215 80 Q200 62 205 42 Q214 66 219 80" fill="#180810"/>
+<path d="M245 80 Q260 62 255 42 Q246 66 241 80" fill="#180810"/>
+<path d="M215 80 Q218 70 230 67 Q242 70 245 80" fill="#180810"/>
+<path d="M216 75 L219 62 L224 72 L230 60 L236 72 L241 62 L244 75Z" fill="#3d1020" stroke="#bb3355" stroke-width="1"/>
+<ellipse cx="224" cy="86" rx="3.5" ry="2.5" fill="#cc2244"/>
+<ellipse cx="236" cy="86" rx="3.5" ry="2.5" fill="#cc2244"/>
+<circle cx="268" cy="130" r="14" fill="#3c1020" opacity=".9"/>
+<circle cx="268" cy="130" r="10" fill="#200a18"/>
+<circle cx="268" cy="130" r="6" fill="#ff3377" opacity=".65"/>
+<line x1="268" y1="112" x2="268" y2="108" stroke="#ff4488" stroke-width="2" opacity=".65"/>
+<line x1="254" y1="116" x2="251" y2="113" stroke="#ff4488" stroke-width="2" opacity=".65"/>
+<line x1="282" y1="116" x2="285" y2="113" stroke="#ff4488" stroke-width="2" opacity=".65"/>
+<line x1="249" y1="116" x2="268" y2="130" stroke="#c8a080" stroke-width="4" stroke-linecap="round"/>
+<circle cx="268" cy="130" r="14" fill="none" stroke="#ff4488" stroke-width="1" opacity=".3" stroke-dasharray="3 4"/>`
+  },
+  Oberon: {
+    bg:'linear-gradient(160deg,#090c06,#0d1408,#12200c)',
+    glow:'#cc9922', titleColor:'#d4b870',
+    title:'Oberon', subtitle:'โอเบอรอน · ผู้ลี้ลับแห่งราตรี', side:'evil',
+    svg:`<path d="M0 148 Q80 116 160 148 Q240 116 320 148 Q390 126 460 148L460 200L0 200Z" fill="#070c04" opacity=".9"/>
+<ellipse cx="230" cy="172" rx="125" ry="22" fill="#1a2a10" opacity=".28"/>
+<path d="M182 200 Q200 132 230 110 Q260 132 278 200Z" fill="#0a1006" stroke="#202c12" stroke-width="1"/>
+<path d="M208 110 Q230 57 252 110 Q238 105 230 107 Q222 105 208 110Z" fill="#070c04" stroke="#182010" stroke-width="1"/>
+<ellipse cx="230" cy="98" rx="14" ry="11" fill="#040702"/>
+<circle cx="224" cy="96" r="3.5" fill="#cc8800"/>
+<circle cx="236" cy="96" r="3.5" fill="#cc8800"/>
+<circle cx="224" cy="96" r="2" fill="#ffcc44"/>
+<circle cx="236" cy="96" r="2" fill="#ffcc44"/>
+<path d="M218 92 Q208 70 212 52 Q216 70 222 89" fill="none" stroke="#2d2000" stroke-width="2"/>
+<path d="M242 92 Q252 70 248 52 Q244 70 238 89" fill="none" stroke="#2d2000" stroke-width="2"/>
+<path d="M210 80 Q204 70 208 62" fill="none" stroke="#2d2000" stroke-width="1.5"/>
+<path d="M250 80 Q256 70 252 62" fill="none" stroke="#2d2000" stroke-width="1.5"/>
+<circle cx="230" cy="130" r="56" fill="none" stroke="#cc8800" stroke-width=".6" opacity=".18" stroke-dasharray="4 6"/>
+<circle cx="230" cy="130" r="42" fill="none" stroke="#cc8800" stroke-width=".4" opacity=".12" stroke-dasharray="2 8"/>
+<ellipse cx="140" cy="180" rx="15" ry="8" fill="#cc8800" opacity=".04"/>
+<ellipse cx="320" cy="175" rx="12" ry="7" fill="#cc8800" opacity=".04"/>`
+  },
+  Minion: {
+    bg:'linear-gradient(160deg,#110404,#160505,#1e0606)',
+    glow:'#cc2222', titleColor:'#ff6868',
+    title:'Minion of Mordred', subtitle:'บริวารแห่งความชั่วร้าย', side:'evil',
+    svg:`<ellipse cx="160" cy="187" rx="26" ry="9" fill="#1c0404" opacity=".6"/>
+<path d="M147 187 Q154 157 163 147 Q172 157 173 187Z" fill="#150404" stroke="#2e0808" stroke-width="1"/>
+<circle cx="160" cy="140" r="11" fill="#180404"/>
+<circle cx="156" cy="138" r="2.5" fill="#ff3333"/>
+<circle cx="164" cy="138" r="2.5" fill="#ff3333"/>
+<ellipse cx="230" cy="190" rx="32" ry="10" fill="#1c0404" opacity=".65"/>
+<path d="M209 190 Q218 150 230 137 Q242 150 251 190Z" fill="#180404" stroke="#3a0808" stroke-width="1"/>
+<circle cx="230" cy="130" r="14" fill="#1a0404"/>
+<circle cx="224" cy="127" r="3" fill="#ff4444"/>
+<circle cx="236" cy="127" r="3" fill="#ff4444"/>
+<circle cx="230" cy="164" r="6" fill="none" stroke="#5a2828" stroke-width="2"/>
+<line x1="224" y1="164" x2="214" y2="164" stroke="#5a2828" stroke-width="2"/>
+<line x1="236" y1="164" x2="246" y2="164" stroke="#5a2828" stroke-width="2"/>
+<ellipse cx="302" cy="187" rx="22" ry="8" fill="#1c0404" opacity=".55"/>
+<path d="M290 187 Q296 160 303 151 Q310 160 314 187Z" fill="#150404" stroke="#2e0808" stroke-width="1"/>
+<circle cx="302" cy="145" r="10" fill="#180404"/>
+<circle cx="298" cy="143" r="2.5" fill="#ff3333"/>
+<circle cx="306" cy="143" r="2.5" fill="#ff3333"/>
+<path d="M218 108 L225 100 L230 108 L235 100 L242 108" fill="none" stroke="#3a0808" stroke-width="1.5" opacity=".6"/>
+<path d="M215 120 Q230 114 245 120" fill="none" stroke="#5a1818" stroke-width="1" opacity=".5"/>`
+  }
+};
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+let players=[], roles=[], leader=0;
+let mission=1, goodScore=0, evilScore=0, rejectCount=0;
+let selectedTeam=[], approveVotes=[], missionVotes=[];
+let missionHistory=[], playerCount=7;
+let currentRevealIdx=null;
+const viewedPlayers = new Set();
+
+const MISSION_SIZES = {
+  5:[2,3,2,3,3], 6:[2,3,4,3,4], 7:[2,3,3,4,4],
+  8:[3,4,4,5,5], 9:[3,4,4,5,5], 10:[3,4,4,5,5]
+};
+const EVIL_ROLES  = new Set(['Assassin','Morgana','Mordred','Oberon','Minion']);
+const MERLIN_SEES = new Set(['Assassin','Morgana','Oberon','Minion']);
+const ROLE_INFO = {
+  Merlin:   {cls:'c-merlin',   label:'เมอร์ลิน',       desc:'รู้ว่าใครเป็นฝ่ายร้าย (ยกเว้น Mordred) แต่ต้องไม่ให้ใครรู้ว่าตัวเองคือ Merlin'},
+  Percival: {cls:'c-percival', label:'เพอร์ซิวัล',     desc:'รู้ว่าใครอาจเป็น Merlin — แต่ Morgana ปลอมตัวได้เช่นกัน'},
+  Servant:  {cls:'c-servant',  label:'ข้ารับใช้',       desc:'ฝ่ายดีธรรมดา — ช่วยทำภารกิจให้สำเร็จ 3 ครั้งเพื่อชนะ'},
+  Assassin: {cls:'c-assassin', label:'นักฆ่า',          desc:'ถ้าฝ่ายดีชนะ 3 ภารกิจ ยังสังหาร Merlin ได้เพื่อพลิกชนะ'},
+  Mordred:  {cls:'c-mordred',  label:'มอร์เดรด',       desc:'Merlin ไม่รู้ว่าใครคือ Mordred — ซ่อนตัวได้อย่างสมบูรณ์'},
+  Morgana:  {cls:'c-morgana',  label:'มอร์กาน่า',      desc:'ปลอมตัวเป็น Merlin ในสายตาของ Percival'},
+  Oberon:   {cls:'c-oberon',   label:'โอเบอรอน',       desc:'เป็นฝ่ายร้ายแต่ไม่รู้จักพวก และพวกก็ไม่รู้ว่า Oberon อยู่ด้วย'},
+  Minion:   {cls:'c-minion',   label:'บริวารมอร์เดรด', desc:'ฝ่ายร้ายธรรมดา — รู้จักสมาชิกฝ่ายร้ายด้วยกัน'},
+};
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
+function showToast(msg,dur=2200){const t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
+
+// ── Setup ─────────────────────────────────────────────────────────────────────
+function changeCount(d){
+  playerCount=Math.min(10,Math.max(5,playerCount+d));
+  document.getElementById('countDisplay').textContent=playerCount;
+  renderNameGrid();
+}
+function renderNameGrid(){
+  const grid=document.getElementById('nameGrid');
+  const ex=Array.from(grid.querySelectorAll('input')).map(i=>i.value);
+  grid.innerHTML='';
+  for(let i=0;i<playerCount;i++){
+    const row=document.createElement('div');
+    row.className='name-row';
+    row.innerHTML=`<span class="num">${i+1}.</span>`;
+    const inp=document.createElement('input');
+    inp.type='text'; inp.placeholder=`ผู้เล่น ${i+1}`; inp.value=ex[i]||''; inp.maxLength=18;
+    row.appendChild(inp); grid.appendChild(row);
+  }
+}
+function generateRoles(n){
+  const b=['Merlin','Assassin'];
+  if(n>=6)b.push('Percival'); if(n>=7)b.push('Morgana');
+  if(n>=8)b.push('Mordred');  if(n>=9)b.push('Oberon');
+  const et=n<=6?2:Math.floor(n/3);
+  while(b.filter(r=>EVIL_ROLES.has(r)).length<et)b.push('Minion');
+  while(b.length<n)b.push('Servant');
+  return b.slice(0,n);
+}
+function startGame(){
+  const inputs=document.querySelectorAll('#nameGrid input');
+  players=Array.from(inputs).map((inp,i)=>inp.value.trim()||`ผู้เล่น ${i+1}`);
+  roles=shuffle(generateRoles(playerCount));
+  leader=0; mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
+  hide('phase-setup'); show('phase-roles'); renderRoleButtons();
+}
+
+// ── Role Reveal ───────────────────────────────────────────────────────────────
+function renderRoleButtons(){
+  const c=document.getElementById('roleButtons');
+  c.innerHTML=''; viewedPlayers.clear();
+  players.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='btn-player'; btn.id=`rb_${i}`;
+    btn.innerHTML=`<span>🧑</span><span>${p}</span>`;
+    btn.onclick=()=>openRoleModal(i);
+    c.appendChild(btn);
+  });
+}
+
+function openRoleModal(i){
+  if(viewedPlayers.has(i)) return;
+  currentRevealIdx=i;
+  const role=roles[i], art=ROLE_ART[role], info=ROLE_INFO[role];
+
+  // Build art banner
+  const artEl=document.getElementById('modalArt');
+  artEl.style.background=art.bg;
+  artEl.innerHTML=`
+    <svg viewBox="0 0 460 195" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <radialGradient id="rg" cx="50%" cy="55%" r="52%">
+          <stop offset="0%" stop-color="${art.glow}" stop-opacity=".2"/>
+          <stop offset="100%" stop-color="${art.glow}" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="vign" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="black" stop-opacity=".05"/>
+          <stop offset="100%" stop-color="black" stop-opacity=".55"/>
+        </linearGradient>
+      </defs>
+      <rect width="460" height="195" fill="url(#rg)"/>
+      ${art.svg}
+      <rect width="460" height="195" fill="url(#vign)"/>
+    </svg>
+    <div class="role-art-overlay">
+      <span class="role-art-title" style="color:${art.titleColor}">${art.title}</span>
+      <span class="role-art-subtitle" style="color:${art.titleColor}">${art.subtitle}</span>
+    </div>`;
+
+  // Build body
+  const isEvil=EVIL_ROLES.has(role);
+  const sideColor=isEvil?'var(--evil-light)':'var(--good-light)';
+  const sideText=isEvil?'🔥 ฝ่ายร้าย':'⚔️ ฝ่ายดี';
+  let extra='';
+  if(role==='Merlin'){
+    const seen=players.filter((_,j)=>MERLIN_SEES.has(roles[j]));
+    extra=`<div class="modal-extra">👁 ฝ่ายร้ายที่คุณมองเห็น:<br><strong class="info-players">${seen.length?seen.join(', '):'(ไม่มี)'}</strong></div>`;
+  }
+  if(role==='Percival'){
+    const seen=players.filter((_,j)=>roles[j]==='Merlin'||roles[j]==='Morgana');
+    if(seen.length) extra=`<div class="modal-extra">🔮 Merlin หรือ Morgana คือหนึ่งในนี้:<br><strong class="info-players">${seen.join(', ')}</strong></div>`;
+  }
+  if(EVIL_ROLES.has(role)&&role!=='Oberon'){
+    const allies=players.filter((_,j)=>j!==i&&EVIL_ROLES.has(roles[j])&&roles[j]!=='Oberon');
+    extra=`<div class="modal-extra">🤝 พวกฝ่ายร้ายของคุณ:<br><strong class="info-players">${allies.length?allies.join(', '):'(ไม่มี — คุณคือคนเดียว)'}</strong></div>`;
+  }
+  if(role==='Oberon') extra=`<div class="modal-extra">⚠️ คุณไม่รู้จักพวกฝ่ายร้าย<br>และพวกเขาก็ไม่รู้ว่าคุณอยู่ด้วย</div>`;
+
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-side" style="color:${sideColor}">${sideText}</div>
+    <div class="modal-desc">${info.desc}</div>
+    ${extra}
+    <div class="modal-warn">⚠️ กดปิดแล้วจะดูไม่ได้อีก</div>
+    <button class="btn-evil big-btn" onclick="closeRoleModal()">🔒 ดูแล้ว — ปิด</button>`;
+
+  show('roleModal');
+}
+
+function closeRoleModal(){
+  if(currentRevealIdx!==null){
+    viewedPlayers.add(currentRevealIdx);
+    const btn=document.getElementById(`rb_${currentRevealIdx}`);
+    if(btn){
+      const p=players[currentRevealIdx];
+      btn.outerHTML=`<div class="btn-player-done"><span>✓</span><span>${p}</span><span class="done-check">ดูแล้ว</span></div>`;
+    }
+    currentRevealIdx=null;
+  }
+  hide('roleModal');
+}
+
+// ── Main Game ─────────────────────────────────────────────────────────────────
+function startMainGame(){ hide('phase-roles'); show('phase-game'); updateHUD(); renderTeamSelect(); }
+
+function updateHUD(){
+  const ms=MISSION_SIZES[players.length];
+  const tr=document.getElementById('missionTrack');
+  tr.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const pip=document.createElement('div');
+    pip.className='mission-pip';
+    if(i<mission){
+      const r=missionHistory[i-1];
+      pip.classList.add(r==='good'?'pip-good':'pip-evil');
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${r==='good'?'✓':'✗'}</div>`;
+    } else if(i===mission){
+      pip.classList.add('pip-current');
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">M${i}</div>`;
+    } else {
+      pip.classList.add('pip-pending');
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label">M${i}</div>`;
+    }
+    tr.appendChild(pip);
+  }
+  document.getElementById('scoreRow').innerHTML=`
+    <span class="score-badge score-good">✓ ดี ${goodScore}</span>
+    <span class="score-badge score-evil">✗ ร้าย ${evilScore}</span>
+    <span class="score-badge score-reject">⊘ ${rejectCount}/5</span>`;
+  document.getElementById('leaderBar').innerHTML=`👑 <strong>Leader :</strong> ${players[leader]}`;
+}
+
+function renderTeamSelect(){
+  selectedTeam=[];
+  const size=MISSION_SIZES[players.length][mission-1];
+  const area=document.getElementById('mainArea');
+  area.innerHTML=`<h3>ภารกิจที่ ${mission} — เลือกทีม ${size} คน</h3>`;
+  const note=document.createElement('p');
+  note.className='info-text'; note.style='text-align:center;margin-bottom:14px;';
+  note.innerHTML=`<strong style="color:var(--gold)">${players[leader]}</strong> เลือกสมาชิก ${size} คน`;
+  area.appendChild(note);
+  players.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='btn-player';
+    btn.innerHTML=`<span>🧑</span><span>${p}</span>`;
+    btn.onclick=()=>{
+      if(selectedTeam.includes(i)){selectedTeam=selectedTeam.filter(x=>x!==i);btn.classList.remove('selected');}
+      else if(selectedTeam.length<size){selectedTeam.push(i);btn.classList.add('selected');}
+      else showToast('⚠️ ครบจำนวนแล้ว');
+    };
+    area.appendChild(btn);
+  });
+  const cb=document.createElement('button');
+  cb.className='btn-gold big-btn'; cb.style='margin-top:12px;'; cb.textContent='✅ ยืนยันทีมและโหวต';
+  cb.onclick=()=>{if(selectedTeam.length<size){showToast(`⚠️ เลือกให้ครบ ${size} คนก่อน`);return;}startApproveVote();};
+  area.appendChild(cb);
+}
+
+function startApproveVote(){approveVotes=[];approveHandoff(0);}
+
+function approveHandoff(i){
+  if(i>=players.length){finishApprove();return;}
+  const tn=selectedTeam.map(j=>players[j]).join(', ');
+  document.getElementById('mainArea').innerHTML=`
+    <h3>ส่งมือถือ</h3>
+    <div class="result-box">
+      <div class="result-big" style="font-size:1.1rem;">📱 ส่งให้</div>
+      <div style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold);margin:10px 0;">
+        ${players[i]}
+      </div>
+      <div class="info-text">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
+    </div>
+    <button class="btn-gold big-btn" onclick="approveVoteStep(${i})">✅ รับแล้ว — โหวตได้เลย</button>`;
+}
+
+function approveVoteStep(i){
+  if(i>=players.length){finishApprove();return;}
+  const tn=selectedTeam.map(j=>players[j]).join(', ');
+  document.getElementById('mainArea').innerHTML=`
+    <h3>โหวตทีม (${i+1}/${players.length})</h3>
+    <div class="result-box">
+      <div class="section-label">👤 ${players[i]}</div>
+      <div class="info-text" style="margin-top:6px;">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
+    </div>
+    <button class="btn-good big-btn" onclick="submitApprove(true,${i})">👍 Approve — อนุมัติ</button>
+    <button class="btn-evil big-btn" onclick="submitApprove(false,${i})">👎 Reject — ปฏิเสธ</button>`;
+}
+function submitApprove(v,i){approveVotes.push(v);approveHandoff(i+1);}
+function finishApprove(){
+  const ac=approveVotes.filter(v=>v).length, rn=approveVotes.length-ac;
+  const passed=ac>players.length/2;
+  const area=document.getElementById('mainArea');
+  area.innerHTML=`
+    <div class="result-box">
+      <div class="result-big" style="color:${passed?'var(--good-light)':'var(--evil-light)'}">
+        ${passed?'✅ ทีมผ่าน!':'❌ ทีมโดนปฏิเสธ'}
+      </div>
+      <div class="result-sub">${ac} Approve / ${rn} Reject</div>
+    </div>`;
+  if(passed){
+    rejectCount=0;
+    const btn=document.createElement('button');
+    btn.className='btn-gold big-btn'; btn.textContent='▶ ออกภารกิจ'; btn.onclick=startMissionVote;
+    area.appendChild(btn);
+  } else {
+    rejectCount++;
+    if(rejectCount>=5){endGame(false,'⊘ Reject ครบ 5 ครั้ง — ฝ่ายร้ายชนะ!');return;}
+    leader=(leader+1)%players.length; updateHUD();
+    const note=document.createElement('p');
+    note.className='info-text'; note.style='text-align:center;margin:12px 0;';
+    note.innerHTML=`Leader ใหม่: <strong style="color:var(--gold)">${players[leader]}</strong>`;
+    area.appendChild(note);
+    const btn=document.createElement('button');
+    btn.className='btn-primary big-btn'; btn.textContent='▶ เลือกทีมใหม่'; btn.onclick=renderTeamSelect;
+    area.appendChild(btn);
+  }
+}
+
+function startMissionVote(){missionVotes=[];missionHandoff(0);}
+
+// หน้าจอกั้น — บอกให้ส่งมือถือให้คนถัดไปก่อน แล้วค่อยแสดงตัวเลือก
+function missionHandoff(idx){
+  if(idx>=selectedTeam.length){finishMission();return;}
+  const pi=selectedTeam[idx];
+  document.getElementById('mainArea').innerHTML=`
+    <h3>ส่งมือถือ</h3>
+    <div class="result-box">
+      <div class="result-big" style="font-size:1.1rem;">📱 ส่งให้</div>
+      <div style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold);margin:10px 0;">
+        ${players[pi]}
+      </div>
+      <div class="info-text">กดเมื่อได้รับมือถือแล้ว</div>
+    </div>
+    <button class="btn-gold big-btn" onclick="missionVoteStep(${idx})">✅ รับแล้ว — เลือกได้เลย</button>`;
+}
+
+function missionVoteStep(idx){
+  if(idx>=selectedTeam.length){finishMission();return;}
+  const pi=selectedTeam[idx], isEvil=EVIL_ROLES.has(roles[pi]);
+  const fb=isEvil
+    ?`<button class="btn-evil big-btn" onclick="submitMission('fail',${idx})">💣 Fail — ก่อวินาศ</button>`
+    :`<button class="btn-evil big-btn" disabled style="opacity:.3;cursor:not-allowed;">🔒 Fail — ฝ่ายดีใช้ไม่ได้</button>`;
+  document.getElementById('mainArea').innerHTML=`
+    <h3>ทำภารกิจ (${idx+1}/${selectedTeam.length})</h3>
+    <div class="result-box">
+      <div class="section-label">👤 ${players[pi]}</div>
+      <div class="info-text" style="margin-top:6px;font-style:italic;">เลือกแบบลับ — ไม่มีใครเห็นผล</div>
+    </div>
+    <button class="btn-good big-btn" onclick="submitMission('success',${idx})">🏅 Success — ทำสำเร็จ</button>
+    ${fb}`;
+}
+function submitMission(v,idx){missionVotes.push(v);missionHandoff(idx+1);}
+function finishMission(){
+  const fc=missionVotes.filter(v=>v==='fail').length;
+  const nt=players.length>=7&&mission===4;
+  const failed=nt?fc>=2:fc>=1;
+  if(failed)evilScore++;else goodScore++;
+  missionHistory.push(failed?'evil':'good');
+  const area=document.getElementById('mainArea');
+  area.innerHTML=`
+    <div class="result-box">
+      <div class="result-big" style="color:${failed?'var(--evil-light)':'var(--good-light)'}">
+        ${failed?'💀 ภารกิจล้มเหลว!':'🏆 ภารกิจสำเร็จ!'}
+      </div>
+      <div class="result-sub">Fail ${fc}/${missionVotes.length} คน${nt?' (ต้องการ 2 Fail)':''}</div>
+    </div>`;
+  mission++; leader=(leader+1)%players.length;
+  if(goodScore===3){
+    const btn=document.createElement('button');
+    btn.className='btn-evil big-btn'; btn.textContent='🗡 เข้าสู่ช่วง Assassin'; btn.onclick=startAssassin;
+    area.appendChild(btn); return;
+  }
+  if(evilScore===3){endGame(false,'☠️ ฝ่ายร้ายชนะ 3 ภารกิจ!');return;}
+  updateHUD();
+  const btn=document.createElement('button');
+  btn.className='btn-gold big-btn'; btn.style='margin-top:12px;';
+  btn.textContent=`▶ ภารกิจที่ ${mission}`; btn.onclick=renderTeamSelect;
+  area.appendChild(btn);
+}
+
+function startAssassin(){
+  updateHUD();
+  const ai=roles.indexOf('Assassin');
+  const area=document.getElementById('mainArea');
+  area.innerHTML=`
+    <div class="assassin-header">
+      <span class="assassin-icon">🗡️</span>
+      <h3>ช่วงสุดท้าย — Assassin</h3>
+      <p class="info-text"><strong style="color:var(--gold)">${ai>=0?players[ai]:'???'}</strong> เลือกสังหาร 1 คนที่คิดว่าเป็น Merlin<br>ถ้าถูก — ฝ่ายร้ายชนะ!</p>
+    </div>`;
+  players.forEach((p,i)=>{
+    const btn=document.createElement('button');
+    btn.className='btn-player';
+    btn.innerHTML=`<span>🎯</span><span>${p}</span>`;
+    btn.onclick=()=>{
+      if(roles[i]==='Merlin')endGame(false,`🗡 <strong>${p}</strong> คือ Merlin — ฝ่ายร้ายชนะ!`);
+      else endGame(true,`🎉 ยิงพลาด! ${p} ไม่ใช่ Merlin — ฝ่ายดีชนะ!`);
+    };
+    area.appendChild(btn);
+  });
+}
+
+function endGame(gw,msg){
+  const area=document.getElementById('mainArea');
+  const rows=players.map((p,i)=>{
+    const info=ROLE_INFO[roles[i]]||{cls:'c-servant',label:roles[i]};
+    return `<div class="role-reveal-row">
+      <span class="player-name">👤 ${p}</span>
+      <span class="role-badge ${info.cls}">${info.label}</span>
+    </div>`;
+  }).join('');
+  area.innerHTML=`
+    <div class="result-box" style="border-color:${gw?'var(--good)':'var(--evil)'}">
+      <div class="result-big" style="color:${gw?'var(--good-light)':'var(--evil-light)'}">
+        ${gw?'🏅 ฝ่ายดีชนะ!':'☠️ ฝ่ายร้ายชนะ!'}
+      </div>
+      <div class="result-sub" style="margin-top:8px;">${msg}</div>
+    </div>
+    <div class="section-label" style="margin-top:16px;">— บทบาทที่แท้จริง —</div>
+    ${rows}
+    <button class="btn-gold big-btn" style="margin-top:18px;" onclick="resetGame()">🔄 เริ่มเกมใหม่</button>`;
+}
+
+function resetGame(){
+  hide('phase-game'); show('phase-setup');
+  ['mainArea','missionTrack','scoreRow','leaderBar'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('countDisplay').textContent=playerCount;
+  renderNameGrid();
+}
+
+renderNameGrid();
+</script>
+</body>
+</html>
