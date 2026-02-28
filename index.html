@@ -333,7 +333,7 @@
   </p>
   <div id="roleButtons"></div>
   <div class="divider"></div>
-  <button class="btn-gold big-btn" onclick="startMainGame()">▶ ทุกคนดูแล้ว — เริ่มภารกิจ</button>
+  <button id="startMissionBtn" class="btn-gold big-btn" onclick="startMainGame()" disabled style="opacity:0.35;cursor:not-allowed;">🔒 ทุกคนต้องดูบทบาทก่อน</button>
 </div>
 
 <!-- Phase 3: Game -->
@@ -533,9 +533,9 @@ const ROLE_ART = {
 };
 
 // ── Data ─────────────────────────────────────────────────────────────────────
-let players=[], roles=[], leader=0;
+let players=[], roles=[], leader=0, nextLeader=null;
 let mission=1, goodScore=0, evilScore=0, rejectCount=0;
-let selectedTeam=[], approveVotes=[], missionVotes=[];
+let selectedTeam=[], approveVotes={}, missionVotes=[];
 let missionHistory=[], playerCount=7;
 let currentRevealIdx=null;
 const viewedPlayers = new Set();
@@ -595,7 +595,7 @@ function startGame(){
   const inputs=document.querySelectorAll('#nameGrid input');
   players=Array.from(inputs).map((inp,i)=>inp.value.trim()||`ผู้เล่น ${i+1}`);
   roles=shuffle(generateRoles(playerCount));
-  leader=Math.floor(Math.random()*playerCount); mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
+  leader = nextLeader !== null ? nextLeader % playerCount : Math.floor(Math.random()*playerCount); mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
   hide('phase-setup'); show('phase-roles'); renderRoleButtons();
 }
 
@@ -681,6 +681,17 @@ function closeRoleModal(){
     currentRevealIdx=null;
   }
   hide('roleModal');
+  // ตรวจว่าทุกคนดูครบแล้วหรือยัง
+  const startBtn = document.getElementById('startMissionBtn');
+  if(viewedPlayers.size >= players.length){
+    startBtn.disabled = false;
+    startBtn.style.opacity = '1';
+    startBtn.style.cursor = 'pointer';
+    startBtn.textContent = '▶ ทุกคนดูแล้ว — เริ่มภารกิจ';
+  } else {
+    const remaining = players.length - viewedPlayers.size;
+    startBtn.textContent = `🔒 ยังเหลืออีก ${remaining} คนที่ยังไม่ได้ดู`;
+  }
 }
 
 // ── Main Game ─────────────────────────────────────────────────────────────────
@@ -741,11 +752,20 @@ function renderTeamSelect(){
   area.appendChild(cb);
 }
 
-function startApproveVote(){approveVotes=[];approveHandoff(0);}
+function startApproveVote(){
+  approveVotes={};
+  // Leader โหวต Approve อัตโนมัติ ไม่ต้องกด
+  approveVotes[leader] = true;
+  approveHandoff(0);
+}
 
 function approveHandoff(i){
   if(i>=players.length){finishApprove();return;}
+  // ข้าม Leader เพราะ Approve อัตโนมัติแล้ว
+  if(i===leader){approveHandoff(i+1);return;}
   const tn=selectedTeam.map(j=>players[j]).join(', ');
+  const total=players.length, votersLeft=total-1; // ไม่นับ Leader
+  const voted=Object.keys(approveVotes).length-1; // ไม่นับ Leader
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
@@ -761,18 +781,26 @@ function approveHandoff(i){
 function approveVoteStep(i){
   if(i>=players.length){finishApprove();return;}
   const tn=selectedTeam.map(j=>players[j]).join(', ');
+  // นับเฉพาะคนที่ไม่ใช่ Leader
+  const nonLeaderPlayers = players.filter((_,idx)=>idx!==leader);
+  const nonLeaderIndex = i < leader ? i+1 : i; // ลำดับที่แสดง
+  const seq = nonLeaderPlayers.indexOf(players[i])+1;
   document.getElementById('mainArea').innerHTML=`
-    <h3>โหวตทีม (${i+1}/${players.length})</h3>
+    <h3>โหวตทีม (${seq}/${nonLeaderPlayers.length})</h3>
     <div class="result-box">
       <div class="section-label">👤 ${players[i]}</div>
       <div class="info-text" style="margin-top:6px;">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
+      <div class="info-text" style="margin-top:4px;font-size:0.8rem;">👑 ${players[leader]} (Leader) Approve อัตโนมัติ</div>
     </div>
     <button class="btn-good big-btn" onclick="submitApprove(true,${i})">👍 Approve — อนุมัติ</button>
     <button class="btn-evil big-btn" onclick="submitApprove(false,${i})">👎 Reject — ปฏิเสธ</button>`;
 }
-function submitApprove(v,i){approveVotes.push(v);approveHandoff(i+1);}
+function submitApprove(v,i){
+  approveVotes[i]=v;
+  approveHandoff(i+1);
+}
 function finishApprove(){
-  const ac=approveVotes.filter(v=>v).length, rn=approveVotes.length-ac;
+  const allVotes=Object.values(approveVotes); const ac=allVotes.filter(v=>v).length, rn=allVotes.length-ac;
   const passed=ac>players.length/2;
   const area=document.getElementById('mainArea');
   area.innerHTML=`
@@ -886,6 +914,7 @@ function startAssassin(){
 }
 
 function endGame(gw,msg){
+  nextLeader = leader % players.length;
   const area=document.getElementById('mainArea');
   const rows=players.map((p,i)=>{
     const info=ROLE_INFO[roles[i]]||{cls:'c-servant',label:roles[i]};
@@ -903,7 +932,10 @@ function endGame(gw,msg){
     </div>
     <div class="section-label" style="margin-top:16px;">— บทบาทที่แท้จริง —</div>
     ${rows}
-    <button class="btn-gold big-btn" style="margin-top:18px;" onclick="resetGame()">🔄 เริ่มเกมใหม่</button>`;
+    <div class="info-text" style="text-align:center;margin-top:14px;">
+      👑 Leader คนแรกเกมหน้า: <strong style="color:var(--gold)">${players[nextLeader]}</strong>
+    </div>
+    <button class="btn-gold big-btn" style="margin-top:14px;" onclick="resetGame()">🔄 เริ่มเกมใหม่</button>`;
 }
 
 function resetGame(){
