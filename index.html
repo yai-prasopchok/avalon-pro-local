@@ -603,6 +603,12 @@ function startGame(){
 function renderRoleButtons(){
   const c=document.getElementById('roleButtons');
   c.innerHTML=''; viewedPlayers.clear();
+  // reset ปุ่มเริ่มภารกิจทุกครั้งที่ render ใหม่
+  const startBtn=document.getElementById('startMissionBtn');
+  startBtn.disabled=true;
+  startBtn.style.opacity='0.35';
+  startBtn.style.cursor='not-allowed';
+  startBtn.textContent='🔒 ทุกคนต้องดูบทบาทก่อน';
   players.forEach((p,i)=>{
     const btn=document.createElement('button');
     btn.className='btn-player'; btn.id=`rb_${i}`;
@@ -648,7 +654,7 @@ function openRoleModal(i){
   let extra='';
   if(role==='Merlin'){
     const seen=players.filter((_,j)=>MERLIN_SEES.has(roles[j]));
-    extra=`<div class="modal-extra">👁 ฝ่ายร้ายที่คุณมองเห็น:<br><strong class="info-players">${seen.length?seen.join(', '):'(ไม่มี)'}</strong></div>`;
+    extra=`<div class="modal-extra">👁 ฝ่ายร้ายที่คุณมองเห็น:<br>${seen.length?seen.map(n=>`<strong style="color:var(--evil-light)">${n}</strong>`).join(', '):'(ไม่มี)'}</div>`;
   }
   if(role==='Percival'){
     const seen=players.filter((_,j)=>roles[j]==='Merlin'||roles[j]==='Morgana');
@@ -656,7 +662,7 @@ function openRoleModal(i){
   }
   if(EVIL_ROLES.has(role)&&role!=='Oberon'){
     const allies=players.filter((_,j)=>j!==i&&EVIL_ROLES.has(roles[j])&&roles[j]!=='Oberon');
-    extra=`<div class="modal-extra">🤝 พวกฝ่ายร้ายของคุณ:<br><strong class="info-players">${allies.length?allies.join(', '):'(ไม่มี — คุณคือคนเดียว)'}</strong></div>`;
+    extra=`<div class="modal-extra">🤝 พวกฝ่ายร้ายของคุณ:<br>${allies.length?allies.map(n=>`<strong style="color:var(--evil-light)">${n}</strong>`).join(', '):'(ไม่มี — คุณคือคนเดียว)'}</div>`;
   }
   if(role==='Oberon') extra=`<div class="modal-extra">⚠️ คุณไม่รู้จักพวกฝ่ายร้าย<br>และพวกเขาก็ไม่รู้ว่าคุณอยู่ด้วย</div>`;
 
@@ -754,18 +760,16 @@ function renderTeamSelect(){
 
 function startApproveVote(){
   approveVotes={};
-  // Leader โหวต Approve อัตโนมัติ ไม่ต้องกด
-  approveVotes[leader] = true;
-  approveHandoff(0);
+  approveVotes[leader] = true; // Leader Approve อัตโนมัติ
+  // สร้างลิสต์ผู้โหวตที่ไม่รวม Leader ตามลำดับ
+  const voterList = players.map((_,idx)=>idx).filter(idx=>idx!==leader);
+  approveHandoff(voterList, 0);
 }
 
-function approveHandoff(i){
-  if(i>=players.length){finishApprove();return;}
-  // ข้าม Leader เพราะ Approve อัตโนมัติแล้ว
-  if(i===leader){approveHandoff(i+1);return;}
+function approveHandoff(voterList, step){
+  if(step>=voterList.length){finishApprove();return;}
+  const i = voterList[step];
   const tn=selectedTeam.map(j=>players[j]).join(', ');
-  const total=players.length, votersLeft=total-1; // ไม่นับ Leader
-  const voted=Object.keys(approveVotes).length-1; // ไม่นับ Leader
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
@@ -775,29 +779,28 @@ function approveHandoff(i){
       </div>
       <div class="info-text">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
     </div>
-    <button class="btn-gold big-btn" onclick="approveVoteStep(${i})">✅ รับแล้ว — โหวตได้เลย</button>`;
+    <button class="btn-gold big-btn" onclick="approveVoteStep(${JSON.stringify(voterList)},${step})">✅ รับแล้ว — โหวตได้เลย</button>`;
 }
 
-function approveVoteStep(i){
-  if(i>=players.length){finishApprove();return;}
+function approveVoteStep(voterList, step){
+  const i = voterList[step];
   const tn=selectedTeam.map(j=>players[j]).join(', ');
-  // นับเฉพาะคนที่ไม่ใช่ Leader
-  const nonLeaderPlayers = players.filter((_,idx)=>idx!==leader);
-  const nonLeaderIndex = i < leader ? i+1 : i; // ลำดับที่แสดง
-  const seq = nonLeaderPlayers.indexOf(players[i])+1;
+  const seq = step+1;
+  const total = voterList.length;
   document.getElementById('mainArea').innerHTML=`
-    <h3>โหวตทีม (${seq}/${nonLeaderPlayers.length})</h3>
+    <h3>โหวตทีม (${seq}/${total})</h3>
     <div class="result-box">
       <div class="section-label">👤 ${players[i]}</div>
       <div class="info-text" style="margin-top:6px;">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
       <div class="info-text" style="margin-top:4px;font-size:0.8rem;">👑 ${players[leader]} (Leader) Approve อัตโนมัติ</div>
     </div>
-    <button class="btn-good big-btn" onclick="submitApprove(true,${i})">👍 Approve — อนุมัติ</button>
-    <button class="btn-evil big-btn" onclick="submitApprove(false,${i})">👎 Reject — ปฏิเสธ</button>`;
+    <button class="btn-good big-btn" onclick="submitApprove(true,${JSON.stringify(voterList)},${step})">👍 Approve — อนุมัติ</button>
+    <button class="btn-evil big-btn" onclick="submitApprove(false,${JSON.stringify(voterList)},${step})">👎 Reject — ปฏิเสธ</button>`;
 }
-function submitApprove(v,i){
+function submitApprove(v, voterList, step){
+  const i = voterList[step];
   approveVotes[i]=v;
-  approveHandoff(i+1);
+  approveHandoff(voterList, step+1);
 }
 function finishApprove(){
   const allVotes=Object.values(approveVotes); const ac=allVotes.filter(v=>v).length, rn=allVotes.length-ac;
@@ -829,12 +832,17 @@ function finishApprove(){
   }
 }
 
-function startMissionVote(){missionVotes=[];missionHandoff(0);}
+function startMissionVote(){
+  missionVotes=[];
+  // เรียงลำดับคนทำภารกิจตามลำดับรายชื่อ ไม่ใช่ลำดับที่เลือก
+  const sortedTeam=[...selectedTeam].sort((a,b)=>a-b);
+  missionHandoff(sortedTeam,0);
+}
 
 // หน้าจอกั้น — บอกให้ส่งมือถือให้คนถัดไปก่อน แล้วค่อยแสดงตัวเลือก
-function missionHandoff(idx){
-  if(idx>=selectedTeam.length){finishMission();return;}
-  const pi=selectedTeam[idx];
+function missionHandoff(sortedTeam,idx){
+  if(idx>=sortedTeam.length){finishMission();return;}
+  const pi=sortedTeam[idx];
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
@@ -844,25 +852,25 @@ function missionHandoff(idx){
       </div>
       <div class="info-text">กดเมื่อได้รับมือถือแล้ว</div>
     </div>
-    <button class="btn-gold big-btn" onclick="missionVoteStep(${idx})">✅ รับแล้ว — เลือกได้เลย</button>`;
+    <button class="btn-gold big-btn" onclick="missionVoteStep(${JSON.stringify(sortedTeam)},${idx})">✅ รับแล้ว — เลือกได้เลย</button>`;
 }
 
-function missionVoteStep(idx){
-  if(idx>=selectedTeam.length){finishMission();return;}
-  const pi=selectedTeam[idx], isEvil=EVIL_ROLES.has(roles[pi]);
+function missionVoteStep(sortedTeam,idx){
+  if(idx>=sortedTeam.length){finishMission();return;}
+  const pi=sortedTeam[idx], isEvil=EVIL_ROLES.has(roles[pi]);
   const fb=isEvil
-    ?`<button class="btn-evil big-btn" onclick="submitMission('fail',${idx})">💣 Fail — ก่อวินาศ</button>`
+    ?`<button class="btn-evil big-btn" onclick="submitMission('fail',${JSON.stringify(sortedTeam)},${idx})">💣 Fail — ก่อวินาศ</button>`
     :`<button class="btn-evil big-btn" disabled style="opacity:.3;cursor:not-allowed;">🔒 Fail — ฝ่ายดีใช้ไม่ได้</button>`;
   document.getElementById('mainArea').innerHTML=`
-    <h3>ทำภารกิจ (${idx+1}/${selectedTeam.length})</h3>
+    <h3>ทำภารกิจ (${idx+1}/${sortedTeam.length})</h3>
     <div class="result-box">
       <div class="section-label">👤 ${players[pi]}</div>
       <div class="info-text" style="margin-top:6px;font-style:italic;">เลือกแบบลับ — ไม่มีใครเห็นผล</div>
     </div>
-    <button class="btn-good big-btn" onclick="submitMission('success',${idx})">🏅 Success — ทำสำเร็จ</button>
+    <button class="btn-good big-btn" onclick="submitMission('success',${JSON.stringify(sortedTeam)},${idx})">🏅 Success — ทำสำเร็จ</button>
     ${fb}`;
 }
-function submitMission(v,idx){missionVotes.push(v);missionHandoff(idx+1);}
+function submitMission(v,sortedTeam,idx){missionVotes.push(v);missionHandoff(sortedTeam,idx+1);}
 function finishMission(){
   const fc=missionVotes.filter(v=>v==='fail').length;
   const nt=players.length>=7&&mission===4;
@@ -878,6 +886,7 @@ function finishMission(){
       <div class="result-sub">Fail ${fc}/${missionVotes.length} คน${nt?' (ต้องการ 2 Fail)':''}</div>
     </div>`;
   mission++; leader=(leader+1)%players.length;
+  nextLeader=(leader+1)%players.length; // เก็บไว้สำหรับเกมหน้า
   if(goodScore===3){
     const btn=document.createElement('button');
     btn.className='btn-evil big-btn'; btn.textContent='🗡 เข้าสู่ช่วง Assassin'; btn.onclick=startAssassin;
@@ -902,19 +911,28 @@ function startAssassin(){
       <p class="info-text"><strong style="color:var(--gold)">${ai>=0?players[ai]:'???'}</strong> เลือกสังหาร 1 คนที่คิดว่าเป็น Merlin<br>ถ้าถูก — ฝ่ายร้ายชนะ!</p>
     </div>`;
   players.forEach((p,i)=>{
+    const isEvil = EVIL_ROLES.has(roles[i]);
     const btn=document.createElement('button');
-    btn.className='btn-player';
-    btn.innerHTML=`<span>🎯</span><span>${p}</span>`;
-    btn.onclick=()=>{
-      if(roles[i]==='Merlin')endGame(false,`🗡 <strong>${p}</strong> คือ Merlin — ฝ่ายร้ายชนะ!`);
-      else endGame(true,`🎉 ยิงพลาด! ${p} ไม่ใช่ Merlin — ฝ่ายดีชนะ!`);
-    };
+    if(isEvil){
+      // ฝ่ายร้าย — กดไม่ได้
+      btn.className='btn-player';
+      btn.style='opacity:0.3;cursor:not-allowed;';
+      btn.innerHTML=`<span>🚫</span><span>${p}</span>`;
+      btn.disabled=true;
+    } else {
+      btn.className='btn-player';
+      btn.innerHTML=`<span>🎯</span><span>${p}</span>`;
+      btn.onclick=()=>{
+        if(roles[i]==='Merlin')endGame(false,`🗡 <strong>${p}</strong> คือ Merlin — ฝ่ายร้ายชนะ!`);
+        else endGame(true,`🎉 ยิงพลาด! ${p} ไม่ใช่ Merlin — ฝ่ายดีชนะ!`);
+      };
+    }
     area.appendChild(btn);
   });
 }
 
 function endGame(gw,msg){
-  nextLeader = leader % players.length;
+  nextLeader = (leader + 1) % players.length;
   const area=document.getElementById('mainArea');
   const rows=players.map((p,i)=>{
     const info=ROLE_INFO[roles[i]]||{cls:'c-servant',label:roles[i]};
