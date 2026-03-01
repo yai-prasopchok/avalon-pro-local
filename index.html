@@ -28,18 +28,42 @@
       content: '';
       position: fixed; inset: 0;
       background-image:
-        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
-        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(1px 1px at 40% 8%,  rgba(255,255,255,0.5) 0%, transparent 100%),
-        radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 70% 22%, rgba(255,255,255,0.6) 0%, transparent 100%),
-        radial-gradient(1px 1px at 85% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(1px 1px at 92% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
-        radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(2px 2px at 33% 70%, rgba(201,168,76,0.25) 0%, transparent 100%),
-        radial-gradient(2px 2px at 78% 35%, rgba(201,168,76,0.18) 0%, transparent 100%);
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 8%,  rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 65%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 22%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 50%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 92% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 5%  80%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(2px 2px at 33% 70%, rgba(201,168,76,0.3) 0%, transparent 100%),
+        radial-gradient(2px 2px at 78% 35%, rgba(201,168,76,0.22) 0%, transparent 100%),
+        radial-gradient(1px 1px at 18% 55%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 47% 30%, rgba(255,255,255,0.45) 0%, transparent 100%),
+        radial-gradient(1px 1px at 73% 75%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(2px 2px at 88% 20%, rgba(201,168,76,0.18) 0%, transparent 100%);
       pointer-events: none; z-index: 0;
+      animation: starsTwinkle 6s ease-in-out infinite alternate;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 35% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 62% 12%, rgba(255,255,255,0.55) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.35) 0%, transparent 100%),
+        radial-gradient(2px 2px at 50% 45%, rgba(201,168,76,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 95% 85%, rgba(255,255,255,0.4) 0%, transparent 100%);
+      pointer-events: none; z-index: 0;
+      animation: starsTwinkle 8s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes starsTwinkle {
+      0%   { opacity: 0.6; }
+      30%  { opacity: 1; }
+      60%  { opacity: 0.75; }
+      100% { opacity: 0.9; }
     }
     body > * { position: relative; z-index: 1; }
 
@@ -79,6 +103,11 @@
       from { opacity:0; transform:translateY(14px); }
       to   { opacity:1; transform:translateY(0); }
     }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .phase-enter { animation: fadeIn 0.35s ease forwards; }
     .card-title {
       font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold);
       text-align: center; margin-bottom: 20px; letter-spacing: 0.1em;
@@ -101,31 +130,55 @@
     input[type=text]:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.1); }
 
     /* ── Buttons ── */
-    button { border:none; border-radius:12px; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.05em; transition:all 0.18s; }
+    button { border:none; border-radius:12px; cursor:pointer; font-family:'Cinzel',serif; letter-spacing:0.05em; transition:all 0.18s; -webkit-tap-highlight-color:transparent; }
     .btn-gold {
       background: linear-gradient(135deg,#9a7020,#c9a84c,#e8c860);
       color:#1a0e00; font-weight:700; font-size:0.9rem; padding:13px 20px;
       box-shadow:0 4px 20px rgba(180,140,40,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      position:relative; overflow:hidden;
     }
+    .btn-gold::after { content:''; position:absolute; inset:0; background:rgba(255,255,255,0); transition:background 0.1s; border-radius:inherit; }
     .btn-gold:hover { transform:translateY(-2px); box-shadow:0 7px 26px rgba(180,140,40,0.6); }
+    .btn-gold:active { transform:translateY(1px) scale(0.98); box-shadow:0 2px 10px rgba(180,140,40,0.5); }
+    .btn-gold:active::after { background:rgba(0,0,0,0.12); }
     .btn-primary {
       background:linear-gradient(135deg,#2a3fb0,#3a55d0); color:white;
       font-size:0.88rem; padding:12px 18px; border:1px solid rgba(255,255,255,0.1);
-      box-shadow:0 4px 18px rgba(40,70,200,0.35);
+      box-shadow:0 4px 18px rgba(40,70,200,0.35); position:relative; overflow:hidden;
     }
     .btn-primary:hover { transform:translateY(-2px); }
+    .btn-primary:active { transform:translateY(1px) scale(0.98); box-shadow:0 2px 8px rgba(40,70,200,0.4); }
     .btn-good {
       background:linear-gradient(135deg,#155c30,#22904c); color:white;
-      font-size:0.9rem; padding:13px 20px;
+      font-size:0.9rem; padding:14px 20px;
       box-shadow:0 4px 18px rgba(30,122,66,0.45); border:1px solid rgba(46,170,92,0.25);
+      position:relative; overflow:hidden;
     }
-    .btn-good:hover { transform:translateY(-2px); box-shadow:0 7px 24px rgba(30,122,66,0.6); }
+    .btn-good:hover { transform:translateY(-2px); box-shadow:0 7px 28px rgba(30,122,66,0.65); }
+    .btn-good:active { transform:translateY(2px) scale(0.97); box-shadow:0 2px 12px rgba(30,122,66,0.5); filter:brightness(1.1); }
     .btn-evil {
       background:linear-gradient(135deg,#6e1010,#b02020); color:white;
-      font-size:0.9rem; padding:13px 20px;
+      font-size:0.9rem; padding:14px 20px;
       box-shadow:0 4px 18px rgba(140,20,20,0.45); border:1px solid rgba(196,40,40,0.25);
+      position:relative; overflow:hidden;
     }
-    .btn-evil:hover { transform:translateY(-2px); box-shadow:0 7px 24px rgba(140,20,20,0.6); }
+    .btn-evil:hover { transform:translateY(-2px); box-shadow:0 7px 28px rgba(140,20,20,0.65); }
+    .btn-evil:active { transform:translateY(2px) scale(0.97); box-shadow:0 2px 12px rgba(140,20,20,0.5); filter:brightness(1.15); }
+    /* ── Decision button weights ── */
+    .btn-good.big-btn {
+      font-size:1rem; padding:16px 20px; letter-spacing:0.08em;
+    }
+    .btn-evil.big-btn {
+      font-size:1rem; padding:16px 20px; letter-spacing:0.08em;
+    }
+    /* Fail button — ถ้าไม่ disabled จะมี subtle pulse เตือน */
+    .btn-evil.big-btn:not([disabled]) {
+      animation:failWarn 3s ease-in-out infinite;
+    }
+    @keyframes failWarn {
+      0%,100% { box-shadow:0 4px 18px rgba(140,20,20,0.45), 0 0 0 0 rgba(196,40,40,0); }
+      50%      { box-shadow:0 4px 18px rgba(140,20,20,0.55), 0 0 0 5px rgba(196,40,40,0.12); }
+    }
     .btn-player {
       background:var(--surface3); color:var(--text); border:1px solid var(--border);
       width:100%; text-align:left; padding:12px 16px; font-family:'Crimson Text',serif;
@@ -133,9 +186,20 @@
       position:relative; transition:all 0.15s;
       display:flex; align-items:center; gap:10px;
     }
-    .btn-player:hover { background:var(--surface4); border-color:var(--gold); transform:translateX(3px); }
-    .btn-player.selected { background:var(--surface4); border-color:var(--gold); color:var(--gold-light); }
-    .btn-player.selected::after { content:'✓'; position:absolute; right:14px; color:var(--gold); font-family:'Cinzel',serif; }
+    .btn-player:hover { background:var(--surface4); border-color:var(--gold); transform:translateX(4px); box-shadow:0 0 12px rgba(201,168,76,0.12); }
+    .btn-player:active { transform:scale(0.97); }
+    .btn-player.selected {
+      background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
+      border-color:var(--gold); color:var(--gold-light);
+      box-shadow:0 0 16px rgba(201,168,76,0.2), inset 0 1px 0 rgba(201,168,76,0.1);
+      animation:playerSelect 0.3s cubic-bezier(0.34,1.5,0.64,1);
+    }
+    .btn-player.selected::after { content:'✓'; position:absolute; right:14px; color:var(--gold); font-family:'Cinzel',serif; font-size:1rem; }
+    @keyframes playerSelect {
+      0%   { transform:scale(1); }
+      40%  { transform:scale(1.03) translateX(4px); }
+      100% { transform:scale(1) translateX(0); }
+    }
     .btn-player-done {
       background:var(--surface2); color:var(--text-muted); border:1px solid rgba(255,255,255,0.04);
       width:100%; text-align:left; padding:12px 16px; font-family:'Crimson Text',serif;
@@ -174,29 +238,55 @@
       flex-direction:column; gap:4px;
     }
     .pip-pending { background:var(--surface3); border-color:rgba(255,255,255,0.08); color:var(--text-muted); }
-    .pip-current { background:rgba(201,168,76,0.1); border-color:var(--gold); color:var(--gold); animation:pipPulse 2s infinite; }
-    .pip-good    { background:linear-gradient(135deg,#155c30,#22904c); border-color:var(--good-light); color:white; box-shadow:0 0 14px var(--good-glow); }
-    .pip-evil    { background:linear-gradient(135deg,#6e1010,#b02020); border-color:var(--evil-light); color:white; box-shadow:0 0 14px var(--evil-glow); }
+    .pip-current {
+      background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
+      border-color:var(--gold); color:var(--gold);
+      animation:pipPulse 1.6s ease-in-out infinite;
+      box-shadow:0 0 0 2px rgba(201,168,76,0.15), 0 0 24px rgba(201,168,76,0.3);
+    }
+    .pip-good {
+      background:linear-gradient(135deg,#155c30,#22904c);
+      border-color:var(--good-light); color:white;
+      box-shadow:0 0 18px var(--good-glow), 0 0 0 2px rgba(46,170,92,0.2);
+      animation:pipReveal 0.5s cubic-bezier(0.34,1.5,0.64,1) forwards;
+    }
+    .pip-evil {
+      background:linear-gradient(135deg,#6e1010,#b02020);
+      border-color:var(--evil-light); color:white;
+      box-shadow:0 0 18px var(--evil-glow), 0 0 0 2px rgba(196,40,40,0.2);
+      animation:pipReveal 0.5s cubic-bezier(0.34,1.5,0.64,1) forwards;
+    }
     @keyframes pipPulse {
-      0%,100% { box-shadow:0 0 6px rgba(201,168,76,0.2); }
-      50%      { box-shadow:0 0 20px rgba(201,168,76,0.45); }
+      0%,100% { box-shadow:0 0 0 2px rgba(201,168,76,0.15), 0 0 14px rgba(201,168,76,0.2); border-color:var(--gold); }
+      50%      { box-shadow:0 0 0 4px rgba(201,168,76,0.25), 0 0 32px rgba(201,168,76,0.55); border-color:var(--gold-light); }
+    }
+    @keyframes pipReveal {
+      0%   { transform:scale(0.7); opacity:0; }
+      60%  { transform:scale(1.08); }
+      100% { transform:scale(1); opacity:1; }
     }
     .pip-label { font-size:0.65rem; letter-spacing:0.04em; opacity:0.85; }
-    .score-row { display:flex; justify-content:center; gap:10px; margin-bottom:12px; }
-    .score-badge { padding:5px 14px; border-radius:20px; font-family:'Cinzel',serif; font-size:0.76rem; letter-spacing:0.06em; }
-    .score-good   { background:rgba(30,122,66,0.18);  border:1px solid var(--good);  color:var(--good-light); }
-    .score-evil   { background:rgba(140,20,20,0.18);  border:1px solid var(--evil);  color:var(--evil-light); }
+    .score-row { display:flex; justify-content:center; gap:8px; margin-bottom:12px; }
+    .score-badge { padding:7px 16px; border-radius:20px; font-family:'Cinzel',serif; font-size:0.88rem; font-weight:600; letter-spacing:0.06em; }
+    .score-good   { background:rgba(30,122,66,0.22);  border:1px solid var(--good);  color:var(--good-light);  box-shadow:0 0 10px rgba(46,170,92,0.15); }
+    .score-evil   { background:rgba(140,20,20,0.22);  border:1px solid var(--evil);  color:var(--evil-light);  box-shadow:0 0 10px rgba(196,40,40,0.15); }
     .score-reject { background:rgba(80,80,80,0.18);   border:1px solid #444;         color:var(--text-muted); }
     .leader-bar {
-      background:rgba(201,168,76,0.06); border:1px solid var(--border);
-      border-radius:12px; padding:9px 14px; text-align:center; margin-bottom:14px; font-size:0.95rem;
+      background:rgba(201,168,76,0.08); border:1px solid var(--border);
+      border-radius:12px; padding:10px 14px; text-align:center; margin-bottom:14px; font-size:1rem;
     }
-    .leader-bar strong { color:var(--gold); font-family:'Cinzel',serif; font-size:0.88rem; }
+    .leader-bar strong { color:var(--gold); font-family:'Cinzel',serif; font-size:1rem; }
 
     /* ── Misc ── */
     .result-box {
       background:var(--surface3); border-radius:14px; padding:16px;
       text-align:center; margin-bottom:14px; border:1px solid var(--border);
+      animation:resultReveal 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes resultReveal {
+      0%   { opacity:0; transform:scale(0.94) translateY(8px); }
+      60%  { transform:scale(1.01) translateY(-1px); }
+      100% { opacity:1; transform:scale(1) translateY(0); }
     }
     .result-big { font-family:'Cinzel',serif; font-size:1.35rem; margin-bottom:6px; }
     .result-sub { font-size:0.9rem; color:var(--text-muted); }
@@ -240,6 +330,86 @@
       from { transform:scale(0.8); opacity:0; }
       to   { transform:scale(1);   opacity:1; }
     }
+
+
+    /* ── Phase Cutscene Banner ── */
+    .cutscene-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+      pointer-events: all;
+      animation: cutsceneFadeIn 0.3s ease forwards;
+    }
+    .cutscene-overlay.hiding {
+      animation: cutsceneFadeOut 0.4s ease forwards;
+    }
+    @keyframes cutsceneFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes cutsceneFadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+    .cutscene-bg {
+      position: absolute; inset: 0;
+      background: var(--cs-bg, rgba(0,0,0,0.92));
+    }
+    .cutscene-lines {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 180px;
+    }
+    .cutscene-lines::before, .cutscene-lines::after {
+      content: '';
+      width: 100%; height: 1px;
+      background: linear-gradient(to right, transparent 0%, var(--cs-color, var(--gold)) 20%, var(--cs-color, var(--gold)) 80%, transparent 100%);
+      opacity: 0.4;
+      animation: cutsceneLines 0.6s ease forwards;
+      flex-shrink: 0;
+    }
+    @keyframes cutsceneLines {
+      from { transform: scaleX(0); opacity: 0; }
+      to   { transform: scaleX(1); opacity: 0.4; }
+    }
+    .cutscene-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 0 24px;
+      animation: cutsceneSlideUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+    }
+    @keyframes cutsceneSlideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .cutscene-phase {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--cs-color, var(--gold)); opacity: 0.8;
+      margin-bottom: 12px;
+    }
+    .cutscene-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.8rem, 7vw, 3rem);
+      color: var(--cs-color, var(--gold));
+      text-shadow: 0 0 40px var(--cs-glow, rgba(201,168,76,0.6));
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .cutscene-sub {
+      font-family: 'Crimson Text', serif;
+      font-size: 1.05rem; font-style: italic;
+      color: var(--text-muted);
+    }
+    .cutscene-skip {
+      position: relative; z-index: 2;
+      background: none; border: 1px solid rgba(255,255,255,0.15);
+      color: var(--text-muted); font-family: 'Cinzel', serif;
+      font-size: 0.72rem; letter-spacing: 0.12em;
+      padding: 8px 20px; border-radius: 20px;
+      cursor: pointer; margin-top: 8px;
+      transition: all 0.2s;
+      animation: cutsceneSlideUp 0.4s cubic-bezier(0.22,1,0.36,1) 0.25s both;
+    }
+    .cutscene-skip:hover { border-color: var(--cs-color, var(--gold)); color: var(--text); }
 
     /* Role art */
     .role-art-banner {
@@ -535,7 +705,7 @@ const ROLE_ART = {
 // ── Data ─────────────────────────────────────────────────────────────────────
 let players=[], roles=[], leader=0, nextLeader=null;
 let mission=1, goodScore=0, evilScore=0, rejectCount=0;
-let selectedTeam=[], approveVotes={}, missionVotes=[];
+let selectedTeam=[], approveVotes={}, missionVotes=[], rejectedTeams=[], nextLeaderSet=false;
 let missionHistory=[], playerCount=7;
 let currentRevealIdx=null;
 const viewedPlayers = new Set();
@@ -595,8 +765,111 @@ function startGame(){
   const inputs=document.querySelectorAll('#nameGrid input');
   players=Array.from(inputs).map((inp,i)=>inp.value.trim()||`ผู้เล่น ${i+1}`);
   roles=shuffle(generateRoles(playerCount));
-  leader = nextLeader !== null ? nextLeader % playerCount : Math.floor(Math.random()*playerCount); mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[];
+  leader = nextLeader !== null ? nextLeader % playerCount : Math.floor(Math.random()*playerCount); mission=1; goodScore=0; evilScore=0; rejectCount=0; missionHistory=[]; rejectedTeams=[]; nextLeaderSet=false;
   hide('phase-setup'); show('phase-roles'); renderRoleButtons();
+}
+
+
+// ── Cutscene System ───────────────────────────────────────────────────────────
+const CUTSCENES = {
+  teamVote: {
+    phase: 'Phase — โหวตทีม',
+    title: 'สภาแห่งคาเมล็อต',
+    sub: 'ทุกคนจะโหวตว่าเห็นด้วยกับทีมนี้หรือไม่',
+    bg: 'rgba(10,15,40,0.96)',
+    color: '#7ec8ff',
+    glow: 'rgba(100,150,255,0.5)',
+  },
+  mission: {
+    phase: 'Phase — ทำภารกิจ',
+    title: 'ออกสู่สมรภูมิ',
+    sub: 'สมาชิกทีมเลือกชะตาของภารกิจอย่างลับๆ',
+    bg: 'rgba(8,20,10,0.96)',
+    color: '#2eaa5c',
+    glow: 'rgba(46,170,92,0.5)',
+  },
+  missionSuccess: {
+    phase: 'ผลภารกิจ',
+    title: 'ภารกิจสำเร็จ!',
+    sub: 'ฝ่ายดีก้าวหน้าอีกหนึ่งขั้น',
+    bg: 'rgba(8,22,12,0.97)',
+    color: '#2eaa5c',
+    glow: 'rgba(46,170,92,0.6)',
+  },
+  missionFail: {
+    phase: 'ผลภารกิจ',
+    title: 'ภารกิจล้มเหลว!',
+    sub: 'ฝ่ายร้ายแอบซ่อนอยู่ในทีม',
+    bg: 'rgba(20,5,5,0.97)',
+    color: '#c42828',
+    glow: 'rgba(196,40,40,0.6)',
+  },
+  assassin: {
+    phase: 'Phase สุดท้าย',
+    title: 'เงาแห่งนักฆ่า',
+    sub: 'Assassin มีโอกาสสุดท้ายพลิกชะตาเกม',
+    bg: 'rgba(18,4,4,0.97)',
+    color: '#ff6868',
+    glow: 'rgba(255,80,80,0.5)',
+  },
+  rejectLose: {
+    phase: 'เกมจบแล้ว',
+    title: 'ความโกลาหลปกคลุม',
+    sub: 'สภาแตกแยก — ฝ่ายร้ายฉวยโอกาสชนะ',
+    bg: 'rgba(20,5,5,0.97)',
+    color: '#c42828',
+    glow: 'rgba(196,40,40,0.6)',
+  },
+  goodWin: {
+    phase: 'เกมจบแล้ว',
+    title: 'แสงแห่งชัยชนะ',
+    sub: 'อัศวินแห่งคาเมล็อตพิทักษ์โลกไว้ได้',
+    bg: 'rgba(5,20,10,0.97)',
+    color: '#2eaa5c',
+    glow: 'rgba(46,170,92,0.6)',
+  },
+  evilWin: {
+    phase: 'เกมจบแล้ว',
+    title: 'ความมืดมิดครองโลก',
+    sub: 'เงาแห่งมอร์เดรดกลืนกินคาเมล็อต',
+    bg: 'rgba(18,3,3,0.98)',
+    color: '#ff4444',
+    glow: 'rgba(255,40,40,0.7)',
+  },
+};
+
+function showCutscene(key, callback) {
+  const cs = CUTSCENES[key];
+  const el = document.createElement('div');
+  el.className = 'cutscene-overlay';
+  el.innerHTML = `
+    <div class="cutscene-bg" style="background:${cs.bg}"></div>
+    <div class="cutscene-lines" style="--cs-color:${cs.color}"></div>
+    <div class="cutscene-content">
+      <div class="cutscene-phase" style="color:${cs.color}">${cs.phase}</div>
+      <div class="cutscene-title" style="color:${cs.color};text-shadow:0 0 40px ${cs.glow}">${cs.title}</div>
+      <div class="cutscene-sub">${cs.sub}</div>
+    </div>
+    <button class="cutscene-skip" onclick="skipCutscene()">กดที่ไหนก็ได้เพื่อข้าม ▶</button>`;
+  el.addEventListener('click', skipCutscene);
+  document.body.appendChild(el);
+
+  let done = false;
+  function skipCutscene() {
+    if (done) return;
+    done = true;
+    el.classList.add('hiding');
+    setTimeout(() => {
+      el.remove();
+      const ma = document.getElementById('mainArea');
+      if(ma){ ma.classList.remove('phase-enter'); void ma.offsetWidth; ma.classList.add('phase-enter'); }
+      callback();
+    }, 380);
+  }
+  window._skipCutscene = skipCutscene;
+
+  // auto-skip หลัง 2.2 วิ
+  setTimeout(() => skipCutscene(), 2200);
 }
 
 // ── Role Reveal ───────────────────────────────────────────────────────────────
@@ -714,8 +987,13 @@ function updateHUD(){
     const failReq=needTwo?'✗2':'✗1';
     if(i<mission){
       const r=missionHistory[i-1];
-      pip.classList.add(r==='good'?'pip-good':'pip-evil');
-      pip.innerHTML=`${ms[i-1]}<div class="pip-label">${r==='good'?'✓':failReq}</div>`;
+      const isGood=r.result==='good';
+      pip.classList.add(isGood?'pip-good':'pip-evil');
+      const successCount=r.total-r.fail;
+      pip.innerHTML=`${ms[i-1]}<div class="pip-label" style="display:flex;gap:3px;justify-content:center;">` +
+        (successCount>0?`<span style="color:#90ffb0;">✓${successCount}</span>`:'') +
+        (r.fail>0?`<span style="color:#ffaaaa;">✗${r.fail}</span>`:'') +
+        `</div>`;
     } else if(i===mission){
       pip.classList.add('pip-current');
       pip.innerHTML=`${ms[i-1]}<div class="pip-label">${failReq}</div>`;
@@ -725,14 +1003,32 @@ function updateHUD(){
     }
     tr.appendChild(pip);
   }
+  const rejectColor = rejectCount>=4 ? 'var(--evil-light)' : rejectCount>=3 ? '#e08020' : 'var(--text-muted)';
+  const rejectBg = rejectCount>=4 ? 'rgba(196,40,40,0.18)' : rejectCount>=3 ? 'rgba(200,120,20,0.15)' : 'rgba(80,80,80,0.18)';
+  const rejectBorder = rejectCount>=4 ? 'var(--evil)' : rejectCount>=3 ? '#a06010' : '#444';
   document.getElementById('scoreRow').innerHTML=`
     <span class="score-badge score-good">✓ ดี ${goodScore}</span>
     <span class="score-badge score-evil">✗ ร้าย ${evilScore}</span>
-    <span class="score-badge score-reject">⊘ ${rejectCount}/5</span>`;
-  document.getElementById('leaderBar').innerHTML=`👑 <strong>Leader :</strong> ${players[leader]}`;
+    <span class="score-badge" style="background:${rejectBg};border:1px solid ${rejectBorder};color:${rejectColor};">⊘ Reject ${rejectCount}/5</span>`;
+  document.getElementById('leaderBar').innerHTML=`👑 <strong>Leader รอบนี้ :</strong> ${players[leader]}`;
 }
 
 function renderTeamSelect(){
+  selectedTeam=[];
+  const size=MISSION_SIZES[players.length][mission-1];
+  const area=document.getElementById('mainArea');
+  // หน้าส่งมือถือให้ Leader ก่อน
+  area.innerHTML=`
+    <h3>ส่งมือถือ</h3>
+    <div class="result-box">
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">📱 ส่งมือถือให้</div>
+      <div style="font-family:'Cinzel Decorative',serif;font-size:2rem;color:var(--gold);margin:8px 0;text-shadow:0 0 20px rgba(201,168,76,0.4);">${players[leader]}</div>
+      <div class="info-text">เลือกทีมสำหรับภารกิจที่ ${mission}</div>
+    </div>
+    <button class="btn-gold big-btn" onclick="showTeamSelect()">✅ รับแล้ว — เลือกทีมได้เลย</button>`;
+}
+
+function showTeamSelect(){
   selectedTeam=[];
   const size=MISSION_SIZES[players.length][mission-1];
   const area=document.getElementById('mainArea');
@@ -753,17 +1049,19 @@ function renderTeamSelect(){
     area.appendChild(btn);
   });
   const cb=document.createElement('button');
-  cb.className='btn-gold big-btn'; cb.style='margin-top:12px;'; cb.textContent='✅ ยืนยันทีมและโหวต';
+  cb.className='btn-gold big-btn'; cb.style='margin-top:12px;'; cb.textContent='✅ ส่งทีมให้โหวต';
   cb.onclick=()=>{if(selectedTeam.length<size){showToast(`⚠️ เลือกให้ครบ ${size} คนก่อน`);return;}startApproveVote();};
   area.appendChild(cb);
 }
 
 function startApproveVote(){
   approveVotes={};
-  approveVotes[leader] = true; // Leader Approve อัตโนมัติ
-  // สร้างลิสต์ผู้โหวตที่ไม่รวม Leader ตามลำดับ
+  approveVotes[leader] = true;
   const voterList = players.map((_,idx)=>idx).filter(idx=>idx!==leader);
-  approveHandoff(voterList, 0);
+  const tn = selectedTeam.map(j=>players[j]).join(', ');
+  // อัปเดต sub ของ cutscene ให้แสดงทีม
+  CUTSCENES.teamVote.sub = 'ทีมที่เสนอ: ' + tn;
+  showCutscene('teamVote', () => approveHandoff(voterList, 0));
 }
 
 function approveHandoff(voterList, step){
@@ -773,10 +1071,8 @@ function approveHandoff(voterList, step){
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
-      <div class="result-big" style="font-size:1.1rem;">📱 ส่งให้</div>
-      <div style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold);margin:10px 0;">
-        ${players[i]}
-      </div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">📱 ส่งมือถือให้</div>
+      <div style="font-family:'Cinzel Decorative',serif;font-size:2rem;color:var(--gold);margin:8px 0;text-shadow:0 0 20px rgba(201,168,76,0.4);">${players[i]}</div>
       <div class="info-text">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
     </div>
     <button class="btn-gold big-btn" onclick="approveVoteStep(${JSON.stringify(voterList)},${step})">✅ รับแล้ว — โหวตได้เลย</button>`;
@@ -784,16 +1080,17 @@ function approveHandoff(voterList, step){
 
 function approveVoteStep(voterList, step){
   const i = voterList[step];
-  const tn=selectedTeam.map(j=>players[j]).join(', ');
   const seq = step+1;
   const total = voterList.length;
+  const teamBadges = selectedTeam.map(j=>`<span style="background:var(--surface4);border:1px solid var(--border);border-radius:8px;padding:3px 10px;font-size:0.9rem;">${players[j]}</span>`).join(' ');
   document.getElementById('mainArea').innerHTML=`
     <h3>โหวตทีม (${seq}/${total})</h3>
-    <div class="result-box">
-      <div class="section-label">👤 ${players[i]}</div>
-      <div class="info-text" style="margin-top:6px;">ทีมที่เสนอ: <span class="info-players">${tn}</span></div>
-      <div class="info-text" style="margin-top:4px;font-size:0.8rem;">👑 ${players[leader]} (Leader) Approve อัตโนมัติ</div>
+    <div class="result-box" style="margin-bottom:10px;">
+      <div style="font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">ทีมที่เสนอ</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">${teamBadges}</div>
+      <div class="info-text" style="margin-top:8px;font-size:0.78rem;">👑 ${players[leader]} Approve อัตโนมัติ</div>
     </div>
+    <div style="font-family:'Cinzel Decorative',serif;font-size:1.5rem;color:var(--gold);text-align:center;margin:12px 0 14px;text-shadow:0 0 20px rgba(201,168,76,0.4);">👤 ${players[i]}</div>
     <button class="btn-good big-btn" onclick="submitApprove(true,${JSON.stringify(voterList)},${step})">👍 Approve — อนุมัติ</button>
     <button class="btn-evil big-btn" onclick="submitApprove(false,${JSON.stringify(voterList)},${step})">👎 Reject — ปฏิเสธ</button>`;
 }
@@ -806,37 +1103,63 @@ function finishApprove(){
   const allVotes=Object.values(approveVotes); const ac=allVotes.filter(v=>v).length, rn=allVotes.length-ac;
   const passed=ac>players.length/2;
   const area=document.getElementById('mainArea');
+  // สร้างรายชื่อผู้โหวตแต่ละฝ่าย เรียงตามลำดับผู้เล่น
+  const approveNames = players.filter((_,i)=>approveVotes[i]===true).join(', ') || '-';
+  const rejectNames  = players.filter((_,i)=>approveVotes[i]===false).join(', ') || '-';
   area.innerHTML=`
     <div class="result-box">
       <div class="result-big" style="color:${passed?'var(--good-light)':'var(--evil-light)'}">
         ${passed?'✅ ทีมผ่าน!':'❌ ทีมโดนปฏิเสธ'}
       </div>
-      <div class="result-sub">${ac} Approve / ${rn} Reject</div>
+      <div class="result-sub" style="font-size:1.05rem;margin-top:6px;"><span style="color:var(--good-light)">✓ ${ac} Approve</span> &nbsp;/&nbsp; <span style="color:var(--evil-light)">✗ ${rn} Reject</span></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="background:rgba(30,122,66,0.12);border:1px solid rgba(46,170,92,0.3);border-radius:10px;padding:9px 14px;">
+          <span style="font-family:'Cinzel',serif;font-size:0.7rem;color:var(--good-light);letter-spacing:0.1em;text-transform:uppercase;">👍 Approve</span>
+          <div style="margin-top:4px;font-size:0.95rem;color:var(--text);">${approveNames}</div>
+        </div>
+        <div style="background:rgba(140,20,20,0.12);border:1px solid rgba(196,40,40,0.3);border-radius:10px;padding:9px 14px;">
+          <span style="font-family:'Cinzel',serif;font-size:0.7rem;color:var(--evil-light);letter-spacing:0.1em;text-transform:uppercase;">👎 Reject</span>
+          <div style="margin-top:4px;font-size:0.95rem;color:var(--text);">${rejectNames}</div>
+        </div>
+      </div>
     </div>`;
   if(passed){
     rejectCount=0;
     const btn=document.createElement('button');
-    btn.className='btn-gold big-btn'; btn.textContent='▶ ออกภารกิจ'; btn.onclick=startMissionVote;
+    btn.className='btn-gold big-btn'; btn.textContent='▶ ออกไปทำภารกิจ'; btn.onclick=startMissionVote;
     area.appendChild(btn);
   } else {
+    rejectedTeams.push({leader:leader, team:[...selectedTeam], mission:mission});
     rejectCount++;
-    if(rejectCount>=5){endGame(false,'⊘ Reject ครบ 5 ครั้ง — ฝ่ายร้ายชนะ!');return;}
-    leader=(leader+1)%players.length; updateHUD();
+    if(rejectCount>=5){updateHUD();showCutscene('rejectLose',()=>endGame(false,'⊘ โหวต Reject ครบ 5 ครั้งติดกัน — ฝ่ายร้ายชนะ!'));return;}
+    const prevLeader=leader; leader=(leader+1)%players.length; updateHUD();
+    // แสดงประวัติ reject ของภารกิจนี้
+    const thisRejects = rejectedTeams.filter(r=>r.mission===mission);
+    let histHtml = '';
+    if(thisRejects.length>0){
+      histHtml = `<div style="margin:10px 0 6px;font-family:'Cinzel',serif;font-size:0.7rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;">ทีมที่ถูก Reject แล้ว</div>`;
+      thisRejects.forEach(r=>{
+        const names = [...r.team].sort((a,b)=>a-b).map(j=>players[j]).join(', ');
+        histHtml += `<div style="background:rgba(140,20,20,0.1);border:1px solid rgba(140,20,20,0.3);border-radius:8px;padding:6px 10px;margin-bottom:5px;font-size:0.82rem;color:var(--text-muted);">👑 ${players[r.leader]}: ${names}</div>`;
+      });
+    }
     const note=document.createElement('p');
     note.className='info-text'; note.style='text-align:center;margin:12px 0;';
-    note.innerHTML=`Leader ใหม่: <strong style="color:var(--gold)">${players[leader]}</strong>`;
+    note.innerHTML=`<span style="color:var(--text-muted)">👑 ${players[prevLeader]} ส่งตำแหน่งให้</span><br><strong style="color:var(--gold);font-family:'Cinzel',serif;font-size:1.1rem;">👑 Leader ใหม่: ${players[leader]}</strong>`;
     area.appendChild(note);
+    if(histHtml){ const hd=document.createElement('div'); hd.innerHTML=histHtml; area.appendChild(hd); }
     const btn=document.createElement('button');
-    btn.className='btn-primary big-btn'; btn.textContent='▶ เลือกทีมใหม่'; btn.onclick=renderTeamSelect;
+    btn.className='btn-primary big-btn'; btn.style='margin-top:8px;'; btn.textContent='▶ เลือกทีมใหม่'; btn.onclick=renderTeamSelect;
     area.appendChild(btn);
   }
 }
 
 function startMissionVote(){
   missionVotes=[];
-  // เรียงลำดับคนทำภารกิจตามลำดับรายชื่อ ไม่ใช่ลำดับที่เลือก
   const sortedTeam=[...selectedTeam].sort((a,b)=>a-b);
-  missionHandoff(sortedTeam,0);
+  showCutscene('mission', () => missionHandoff(sortedTeam, 0));
 }
 
 // หน้าจอกั้น — บอกให้ส่งมือถือให้คนถัดไปก่อน แล้วค่อยแสดงตัวเลือก
@@ -846,28 +1169,26 @@ function missionHandoff(sortedTeam,idx){
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
-      <div class="result-big" style="font-size:1.1rem;">📱 ส่งให้</div>
-      <div style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold);margin:10px 0;">
-        ${players[pi]}
-      </div>
+      <div style="font-family:'Cinzel',serif;font-size:0.8rem;color:var(--text-muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px;">📱 ส่งมือถือให้</div>
+      <div style="font-family:'Cinzel Decorative',serif;font-size:2rem;color:var(--gold);margin:8px 0;text-shadow:0 0 20px rgba(201,168,76,0.4);">${players[pi]}</div>
       <div class="info-text">กดเมื่อได้รับมือถือแล้ว</div>
     </div>
-    <button class="btn-gold big-btn" onclick="missionVoteStep(${JSON.stringify(sortedTeam)},${idx})">✅ รับแล้ว — เลือกได้เลย</button>`;
+    <button class="btn-gold big-btn" onclick="missionVoteStep(${JSON.stringify(sortedTeam)},${idx})">✅ รับแล้ว — โหวตได้เลย</button>`;
 }
 
 function missionVoteStep(sortedTeam,idx){
   if(idx>=sortedTeam.length){finishMission();return;}
   const pi=sortedTeam[idx], isEvil=EVIL_ROLES.has(roles[pi]);
   const fb=isEvil
-    ?`<button class="btn-evil big-btn" onclick="submitMission('fail',${JSON.stringify(sortedTeam)},${idx})">💣 Fail — ก่อวินาศ</button>`
+    ?`<button class="btn-evil big-btn" onclick="submitMission('fail',${JSON.stringify(sortedTeam)},${idx})">💣 Fail — ทำให้ล้มเหลว</button>`
     :`<button class="btn-evil big-btn" disabled style="opacity:.3;cursor:not-allowed;">🔒 Fail — ฝ่ายดีใช้ไม่ได้</button>`;
   document.getElementById('mainArea').innerHTML=`
     <h3>ทำภารกิจ (${idx+1}/${sortedTeam.length})</h3>
     <div class="result-box">
-      <div class="section-label">👤 ${players[pi]}</div>
-      <div class="info-text" style="margin-top:6px;font-style:italic;">เลือกแบบลับ — ไม่มีใครเห็นผล</div>
+      <div style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--text);margin-bottom:8px;">👤 ${players[pi]}</div>
+      <div class="info-text" style="margin-top:2px;font-style:italic;">เลือกแบบลับ — ไม่มีใครเห็นผล</div>
     </div>
-    <button class="btn-good big-btn" onclick="submitMission('success',${JSON.stringify(sortedTeam)},${idx})">🏅 Success — ทำสำเร็จ</button>
+    <button class="btn-good big-btn" onclick="submitMission('success',${JSON.stringify(sortedTeam)},${idx})">🏅 Success — ทำภารกิจสำเร็จ</button>
     ${fb}`;
 }
 function submitMission(v,sortedTeam,idx){missionVotes.push(v);missionHandoff(sortedTeam,idx+1);}
@@ -876,31 +1197,38 @@ function finishMission(){
   const nt=players.length>=7&&mission===4;
   const failed=nt?fc>=2:fc>=1;
   if(failed)evilScore++;else goodScore++;
-  missionHistory.push(failed?'evil':'good');
+  missionHistory.push({result:failed?'evil':'good', fail:fc, total:missionVotes.length});
+  showCutscene(failed?'missionFail':'missionSuccess', () => _showMissionResult(fc, nt, failed));
+}
+
+function _showMissionResult(fc, nt, failed){
   const area=document.getElementById('mainArea');
   area.innerHTML=`
     <div class="result-box">
-      <div class="result-big" style="color:${failed?'var(--evil-light)':'var(--good-light)'}">
+      <div class="result-big" style="font-size:1.6rem;color:${failed?'var(--evil-light)':'var(--good-light)'}">
         ${failed?'💀 ภารกิจล้มเหลว!':'🏆 ภารกิจสำเร็จ!'}
       </div>
       <div class="result-sub">Fail ${fc}/${missionVotes.length} คน${nt?' (ต้องการ 2 Fail)':''}</div>
     </div>`;
-  mission++; leader=(leader+1)%players.length;
-  nextLeader=(leader+1)%players.length; // เก็บไว้สำหรับเกมหน้า
+  mission++; leader=(leader+1)%players.length; rejectedTeams=rejectedTeams.filter(r=>r.mission<mission);
+  nextLeader=leader; nextLeaderSet=true; // leader ถูก +1 แล้ว เซ็ตครั้งเดียว
+  updateHUD(); // อัปเดต pip สีก่อนเสมอ รวมถึงภารกิจสุดท้าย
   if(goodScore===3){
     const btn=document.createElement('button');
     btn.className='btn-evil big-btn'; btn.textContent='🗡 เข้าสู่ช่วง Assassin'; btn.onclick=startAssassin;
     area.appendChild(btn); return;
   }
   if(evilScore===3){endGame(false,'☠️ ฝ่ายร้ายชนะ 3 ภารกิจ!');return;}
-  updateHUD();
   const btn=document.createElement('button');
   btn.className='btn-gold big-btn'; btn.style='margin-top:12px;';
-  btn.textContent=`▶ ภารกิจที่ ${mission}`; btn.onclick=renderTeamSelect;
+  const nextSize=MISSION_SIZES[players.length][mission-1]; btn.textContent=`▶ ภารกิจที่ ${mission}  (เลือกทีม ${nextSize} คน)`; btn.onclick=renderTeamSelect;
   area.appendChild(btn);
 }
 
 function startAssassin(){
+  showCutscene('assassin', () => _showAssassinPhase());
+}
+function _showAssassinPhase(){
   updateHUD();
   const ai=roles.indexOf('Assassin');
   const area=document.getElementById('mainArea');
@@ -908,7 +1236,8 @@ function startAssassin(){
     <div class="assassin-header">
       <span class="assassin-icon">🗡️</span>
       <h3>ช่วงสุดท้าย — Assassin</h3>
-      <p class="info-text"><strong style="color:var(--gold)">${ai>=0?players[ai]:'???'}</strong> เลือกสังหาร 1 คนที่คิดว่าเป็น Merlin<br>ถ้าถูก — ฝ่ายร้ายชนะ!</p>
+      <div style="font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:var(--evil-light);margin:6px 0;text-shadow:0 0 20px rgba(196,40,40,0.5);">${ai>=0?players[ai]:'???'}</div>
+      <p class="info-text">เลือกสังหาร 1 คนที่คิดว่าเป็น Merlin<br><span style="color:var(--evil-light);font-style:normal;">ถ้าถูก — ฝ่ายร้ายชนะ!</span></p>
     </div>`;
   players.forEach((p,i)=>{
     const isEvil = EVIL_ROLES.has(roles[i]);
@@ -924,7 +1253,7 @@ function startAssassin(){
       btn.innerHTML=`<span>🎯</span><span>${p}</span>`;
       btn.onclick=()=>{
         if(roles[i]==='Merlin')endGame(false,`🗡 <strong>${p}</strong> คือ Merlin — ฝ่ายร้ายชนะ!`);
-        else endGame(true,`🎉 ยิงพลาด! ${p} ไม่ใช่ Merlin — ฝ่ายดีชนะ!`);
+        else endGame(true,`🎉 เดาผิด! ${p} ไม่ใช่ Merlin — ฝ่ายดีชนะ!`);
       };
     }
     area.appendChild(btn);
@@ -932,7 +1261,12 @@ function startAssassin(){
 }
 
 function endGame(gw,msg){
-  nextLeader = (leader + 1) % players.length;
+  // ถ้า nextLeader ยังไม่ได้เซ็ต (assassin path) ให้เซ็ตที่นี่
+  if(!nextLeaderSet) nextLeader=(leader+1)%players.length;
+  nextLeaderSet=false;
+  showCutscene(gw?'goodWin':'evilWin', () => _showEndGame(gw, msg));
+}
+function _showEndGame(gw,msg){
   const area=document.getElementById('mainArea');
   const rows=players.map((p,i)=>{
     const info=ROLE_INFO[roles[i]]||{cls:'c-servant',label:roles[i]};
