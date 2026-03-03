@@ -503,6 +503,7 @@
   </p>
   <div id="roleButtons"></div>
   <div class="divider"></div>
+  <button id="reshuffleBtn" class="btn-primary big-btn" onclick="reshuffleRoles()" style="margin-bottom:6px;font-size:0.82rem;opacity:0.7;">🎲 มีคนกดผิด — สุ่มบทบาทใหม่ทั้งหมด</button>
   <button id="startMissionBtn" class="btn-gold big-btn" onclick="startMainGame()" disabled style="opacity:0.35;cursor:not-allowed;">🔒 ทุกคนต้องดูบทบาทก่อน</button>
 </div>
 
@@ -876,6 +877,9 @@ function showCutscene(key, callback) {
 function renderRoleButtons(){
   const c=document.getElementById('roleButtons');
   c.innerHTML=''; viewedPlayers.clear();
+  // reset ปุ่มสุ่มใหม่ให้แสดงทุกครั้ง
+  const rb=document.getElementById('reshuffleBtn');
+  if(rb){ rb.style.opacity='0.7'; rb.style.pointerEvents='auto'; }
   // reset ปุ่มเริ่มภารกิจทุกครั้งที่ render ใหม่
   const startBtn=document.getElementById('startMissionBtn');
   startBtn.disabled=true;
@@ -967,6 +971,8 @@ function closeRoleModal(){
     startBtn.style.opacity = '1';
     startBtn.style.cursor = 'pointer';
     startBtn.textContent = '▶ ทุกคนดูแล้ว — เริ่มภารกิจ';
+    const rb = document.getElementById('reshuffleBtn');
+    if(rb) { rb.style.opacity='0'; rb.style.pointerEvents='none'; rb.style.transition='opacity 0.4s'; }
   } else {
     const remaining = players.length - viewedPlayers.size;
     startBtn.textContent = `🔒 ยังเหลืออีก ${remaining} คนที่ยังไม่ได้ดู`;
@@ -974,8 +980,37 @@ function closeRoleModal(){
 }
 
 // ── Main Game ─────────────────────────────────────────────────────────────────
+function reshuffleRoles(){
+  // แสดง confirm overlay แทน browser confirm()
+  const overlay = document.createElement('div');
+  overlay.id = 'reshuffleOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:linear-gradient(160deg,#0f0f1e,#171728);border:1px solid rgba(201,168,76,0.3);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;animation:popIn 0.2s cubic-bezier(0.34,1.5,0.64,1);">
+      <div style="font-size:2rem;margin-bottom:12px;">🎲</div>
+      <div style="font-family:'Cinzel',serif;font-size:1rem;color:#f0d080;margin-bottom:8px;">สุ่มบทบาทใหม่ทั้งหมด?</div>
+      <div style="font-size:0.88rem;color:#7878a0;margin-bottom:22px;font-style:italic;">ทุกคนจะต้องดูบทบาทใหม่อีกครั้ง</div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="document.getElementById('reshuffleOverlay').remove()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:#e8e0d0;font-family:'Cinzel',serif;font-size:0.82rem;cursor:pointer;">ยกเลิก</button>
+        <button id="confirmReshuffle" style="flex:1;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#2a3fb0,#3a55d0);color:white;font-family:'Cinzel',serif;font-size:0.82rem;cursor:pointer;font-weight:600;">ยืนยัน</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelector('#confirmReshuffle').onclick = () => {
+    overlay.remove();
+    roles = shuffle(generateRoles(playerCount));
+    renderRoleButtons();
+    showToast('🎲 สุ่มบทบาทใหม่แล้ว — ทุกคนดูใหม่อีกครั้ง');
+  };
+  // กดนอก overlay ปิดได้
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+}
 function startMainGame(){ hide('phase-roles'); show('phase-game'); updateHUD(); renderTeamSelect(); }
 
+function hideGameOverHUD(){
+  document.querySelectorAll('.pip-current').forEach(p=>{p.classList.remove('pip-current');p.classList.add('pip-pending');});
+  document.getElementById('leaderBar').style.display='none';
+}
 function updateHUD(){
   const ms=MISSION_SIZES[players.length];
   const tr=document.getElementById('missionTrack');
@@ -1010,7 +1045,7 @@ function updateHUD(){
     <span class="score-badge score-good">✓ ดี ${goodScore}</span>
     <span class="score-badge score-evil">✗ ร้าย ${evilScore}</span>
     <span class="score-badge" style="background:${rejectBg};border:1px solid ${rejectBorder};color:${rejectColor};">⊘ Reject ${rejectCount}/5</span>`;
-  document.getElementById('leaderBar').innerHTML=`👑 <strong>Leader รอบนี้ :</strong> ${players[leader]}`;
+  const lb=document.getElementById('leaderBar'); lb.style.display=''; lb.innerHTML=`👑 <strong>Leader รอบนี้ :</strong> ${players[leader]}`;
 }
 
 function renderTeamSelect(){
@@ -1058,7 +1093,7 @@ function startApproveVote(){
   approveVotes={};
   approveVotes[leader] = true;
   const voterList = players.map((_,idx)=>idx).filter(idx=>idx!==leader);
-  const tn = selectedTeam.map(j=>players[j]).join(', ');
+  const tn = [...selectedTeam].sort((a,b)=>a-b).map(j=>players[j]).join(', ');
   // อัปเดต sub ของ cutscene ให้แสดงทีม
   CUTSCENES.teamVote.sub = 'ทีมที่เสนอ: ' + tn;
   showCutscene('teamVote', () => approveHandoff(voterList, 0));
@@ -1067,7 +1102,7 @@ function startApproveVote(){
 function approveHandoff(voterList, step){
   if(step>=voterList.length){finishApprove();return;}
   const i = voterList[step];
-  const tn=selectedTeam.map(j=>players[j]).join(', ');
+  const tn=[...selectedTeam].sort((a,b)=>a-b).map(j=>players[j]).join(', ');
   document.getElementById('mainArea').innerHTML=`
     <h3>ส่งมือถือ</h3>
     <div class="result-box">
@@ -1082,7 +1117,7 @@ function approveVoteStep(voterList, step){
   const i = voterList[step];
   const seq = step+1;
   const total = voterList.length;
-  const teamBadges = selectedTeam.map(j=>`<span style="background:var(--surface4);border:1px solid var(--border);border-radius:8px;padding:3px 10px;font-size:0.9rem;">${players[j]}</span>`).join(' ');
+  const teamBadges = [...selectedTeam].sort((a,b)=>a-b).map(j=>`<span style="background:var(--surface4);border:1px solid var(--border);border-radius:8px;padding:3px 10px;font-size:0.9rem;">${players[j]}</span>`).join(' ');
   document.getElementById('mainArea').innerHTML=`
     <h3>โหวตทีม (${seq}/${total})</h3>
     <div class="result-box" style="margin-bottom:10px;">
@@ -1133,7 +1168,7 @@ function finishApprove(){
   } else {
     rejectedTeams.push({leader:leader, team:[...selectedTeam], mission:mission});
     rejectCount++;
-    if(rejectCount>=5){updateHUD();showCutscene('rejectLose',()=>endGame(false,'⊘ โหวต Reject ครบ 5 ครั้งติดกัน — ฝ่ายร้ายชนะ!'));return;}
+    if(rejectCount>=5){updateHUD();document.querySelectorAll('.pip-current').forEach(p=>{p.classList.remove('pip-current');p.classList.add('pip-pending');});document.getElementById('leaderBar').style.display='none';showCutscene('rejectLose',()=>endGame(false,'⊘ โหวต Reject ครบ 5 ครั้งติดกัน — ฝ่ายร้ายชนะ!'));return;}
     const prevLeader=leader; leader=(leader+1)%players.length; updateHUD();
     // แสดงประวัติ reject ของภารกิจนี้
     const thisRejects = rejectedTeams.filter(r=>r.mission===mission);
@@ -1214,11 +1249,18 @@ function _showMissionResult(fc, nt, failed){
   nextLeader=leader; nextLeaderSet=true; // leader ถูก +1 แล้ว เซ็ตครั้งเดียว
   updateHUD(); // อัปเดต pip สีก่อนเสมอ รวมถึงภารกิจสุดท้าย
   if(goodScore===3){
+    // เกมจบ — ซ่อน pip-current และ leaderBar
+    document.querySelectorAll('.pip-current').forEach(p=>{ p.classList.remove('pip-current'); p.classList.add('pip-pending'); });
+    document.getElementById('leaderBar').style.display='none';
     const btn=document.createElement('button');
     btn.className='btn-evil big-btn'; btn.textContent='🗡 เข้าสู่ช่วง Assassin'; btn.onclick=startAssassin;
     area.appendChild(btn); return;
   }
-  if(evilScore===3){endGame(false,'☠️ ฝ่ายร้ายชนะ 3 ภารกิจ!');return;}
+  if(evilScore===3){
+    document.querySelectorAll('.pip-current').forEach(p=>{ p.classList.remove('pip-current'); p.classList.add('pip-pending'); });
+    document.getElementById('leaderBar').style.display='none';
+    endGame(false,'☠️ ฝ่ายร้ายชนะ 3 ภารกิจ!');return;
+  }
   const btn=document.createElement('button');
   btn.className='btn-gold big-btn'; btn.style='margin-top:12px;';
   const nextSize=MISSION_SIZES[players.length][mission-1]; btn.textContent=`▶ ภารกิจที่ ${mission}  (เลือกทีม ${nextSize} คน)`; btn.onclick=renderTeamSelect;
@@ -1229,7 +1271,7 @@ function startAssassin(){
   showCutscene('assassin', () => _showAssassinPhase());
 }
 function _showAssassinPhase(){
-  updateHUD();
+  updateHUD(); hideGameOverHUD();
   const ai=roles.indexOf('Assassin');
   const area=document.getElementById('mainArea');
   area.innerHTML=`
@@ -1267,6 +1309,7 @@ function endGame(gw,msg){
   showCutscene(gw?'goodWin':'evilWin', () => _showEndGame(gw, msg));
 }
 function _showEndGame(gw,msg){
+  hideGameOverHUD();
   const area=document.getElementById('mainArea');
   const rows=players.map((p,i)=>{
     const info=ROLE_INFO[roles[i]]||{cls:'c-servant',label:roles[i]};
